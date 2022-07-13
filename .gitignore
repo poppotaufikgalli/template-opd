@@ -21,3 +21,11 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# unused file
+public/xx*
+src/xx*
+src/components/xx*
+src/components/partials/xx*
+src/composable/xx*
+src/views/xx*
