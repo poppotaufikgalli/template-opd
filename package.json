@@ -16,6 +16,7 @@
     "lodash": "^4.17.21",
     "masonry-layout": "^4.2.2",
     "moment": "^2.29.3",
+    "pinia": "^2.0.20",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"
   },

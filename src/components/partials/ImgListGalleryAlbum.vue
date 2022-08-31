@@ -1,18 +1,22 @@
 <script>
 	import { getGallery } from '@/composables/Api';
-	import { getEnv } from '@/composables/myfunc';
+	import { getEnv, makeJudul } from '@/composables/myfunc';
 
 	export default {
 		props: {
 			'id_gallery_album' : Number,
 		},
 		async mounted() {
-			//console.log(this.id_gallery_album)
 			if(this.id_gallery_album > 0){
 				let response = await getGallery(this.id_gallery_album);
-				//console.log(response)  
+				console.log(response.data)  
 				this.lsGallery = response.data.gallery;
 				this.isReady = true
+			}
+		},
+		methods:{
+			makeJudul(str){
+				return makeJudul(str)
 			}
 		},
 		data(){
@@ -27,29 +31,25 @@
 <template>
 	<template v-if="isReady">
 		<template v-if="lsGallery.length > 0" >
-			<h5 class="fst-italic text-capitalize">Galeri</h5>
-			<div class="row row-cols-1 row-cols-md-3 g-3">
-				<template v-for="(item, key) in lsGallery" :key="key">
-					<div class="col">
-						<div class="overflow-hidden text-white position-relative">
-							<img v-if="item.vid_pic == 'P'"
-								class="img-fluid"
-								:src="env.imgUrl+'posting/galeri/'+env.kunker+'/'+ item.guid" 
-								:alt="item.post_judul"
-								style="max-height: 250px; object-fit: cover;" 
-								@error="(() => item.guid = null)"
-							>		
-							<video v-if="item.vid_pic == 'V'" class="card-img-top">
-								<source :src="env.imgUrl+'posting/galeri/'+env.kunker+'/'+ item.guid">
-								Your browser does not support the video tag.
-							</video>
-							<div class="position-absolute bottom-0 start-0 px-2 py-1 bg-dark">
-								<span class="small">{{item.judul_gallery}}</span>
+			<h5 class="fst-italic text-capitalize">Daftar Galeri</h5>
+			<div class="row row-cols-1 row-cols-md-3 g-4">
+				<div class="col" v-for="(item, key) in lsGallery" :key="key">
+					<div class="position-relative text-bg-dark">
+						<img v-if="item.vid_pic == 'P'"
+							:src="env.imgUrl+'posting/galeri/'+env.kunker+'/'+ item.gambar" 
+							class="card-img" style="height: 150px; object-fit: contain;" 
+							@error="(() => item.gambar = null)"
+						>	
+						<div class="position-absolute bottom-0 start-0 w-100">
+							<div class="bg-primary bg-opacity-75 p-2 small">
+								<router-link 
+									:to="{path : '/gallery_item/'+makeJudul(item.judul_gallery), query: {id : item.id}}"
+									class="stretched-link text-decoration-none link-light small"
+								>{{item.judul_gallery}}</router-link>
 							</div>
 						</div>
-					</div>	
-				</template>
-				
+					</div>
+				</div>
 			</div>
 		</template>
 	</template>

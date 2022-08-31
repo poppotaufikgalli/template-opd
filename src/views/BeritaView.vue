@@ -2,9 +2,11 @@
 	import { ref, watch, computed } from 'vue'
 	import LinkTags from '@/components/partials/LinkTags';
 	import ImgListGalleryAlbum from '@/components/partials/ImgListGalleryAlbum';
+	import OnProgresPage from '@/components/partials/OnProgresPage';
 	import { useRoute } from 'vue-router';
 	import { getData } from '@/composables/Api';
-	import { beautifyDate1, getEnv, cleanTextP, makeJudul } from '@/composables/myfunc';
+	import { getEnv, makeJudul } from '@/composables/myfunc';
+	import { useCounterStore } from '@/stores/counter'
 
 	const _ = require("lodash");
 	const moment = require("moment");
@@ -16,21 +18,18 @@
 	const env = getEnv();
 	const currPage = ref(0);
 	const maxPage = ref(1);
-	//const berita_hari_ini = ref({});
 	const error = ref();
 
+	const store = useCounterStore()
+
 	async function fetchData() {
-		//console.log("BeritaView")
 		isReady.value = false;
 		var routename = router.params.page ? router.params.page : 'berita';
 		page.value = routename
 		try{
 			let response = await getData('berita');  
 			data.value = response.data.berita
-		
-			//let a = _.groupBy(data.value, 'thn_terbit')
-			
-			//console.log(a)
+			console.log(data.value)
 		} catch(err){
 			error.value = err.toString()
 		}
@@ -54,9 +53,10 @@
 		});
 	})
 
-	function setCurrPage(id_post){
-		currPage.value = _.findKey(data.value, ['id_post', id_post]);
+	function setCurrPage(id){
+		currPage.value = _.findKey(data.value, ['id', id]);
 		maxPage.value = parseInt(currPage.value) +1
+		store.setVisitList(id);
 	}
 
 	// fetch immediately
@@ -71,31 +71,38 @@
 				<i class="bi bi-exclamation-triangle-fill"></i><div>&nbsp;Error : {{ error }}</div>
 			</div>
 			<template v-if="isReady">
-				<article v-for="item in data.slice(currPage, maxPage)" :key="item.id" class="blog-post blog-post-list overflow-hidden surface">
-					<h3 class="blog-post-title text-capitalize">{{ item.post_judul }}</h3>
-					<p class="blog-post-meta badge info-post small">
-						<i class="bi bi-calendar-fill"></i> {{ beautifyDate1(item.tgl_terbit) }}  |  
-						<i class="bi bi-pen-fill"></i> Oleh <router-link :to="{path: '/list/'+item.post_user, query: {type : 'post_user', page: page} }">{{item.post_user}}</router-link>  |  
-						<i class="bi bi-eye-fill"></i> Dilihat : {{item.jml_klik}}
-					</p>
-					<template v-if="item.post_gambar">
-						<img 
-							:src="env.imgUrl+'posting/'+(item.tipe_post == 'halaman' ? 'halaman' : 'berita')+'/'+env.kunker+'/'+ item.post_gambar" 
-							class="col-md-8" 
-							:alt="item.post_judul"
-							style="max-height: 300px; object-fit: cover;" 
-							@error="(() => item.post_gambar = null)"
-						>	
-					</template>
-					<div v-html="cleanTextP(item.post_isi)" class="small" :style="item.post_gambar ? 'min-height: 330px' : ''"></div>
-					<p class="blog-post-meta badge info-post small">
-						<i class="bi bi-stack"></i> Kategori : <router-link :to="{path : '/list/'+item.kategori_post, query: {type : 'kategori', page: page}}">{{item.kategori_post}}</router-link>  |  
-						<i class="bi bi-tags-fill"></i> Tags : <LinkTags :tags="item.tags" :page="page" />
-					</p>
-					<hr />
-					<ImgListGalleryAlbum v-if="item.id_gallery_album > 0" :id_gallery_album="item.id_gallery_album" />	
-				</article>
+				<template v-if="data">
+					<article v-for="item in data.slice(currPage, maxPage)" :key="item.id" class="blog-post blog-post-list overflow-hidden surface">
+						<h3 class="blog-post-title text-capitalize">{{ item.judul_post }}</h3>
+						<p class="blog-post-meta badge info-post small">
+							<i class="bi bi-calendar-fill"></i> {{ item.tanggal_terbit }}  |  
+							<i class="bi bi-pen-fill"></i> Oleh <router-link :to="{path: '/list/'+item.penulis, query: {type : 'penulis', page: page} }">{{item.penulis}}</router-link>  |  
+							<i class="bi bi-eye-fill"></i> Dilihat : {{item.jum_klik ? item.jum_klik : 0}}
+						</p>
+						<br/>
+						<template v-if="item.post_gambar">
+							<img 
+								:src="env.imgUrl+'posting/'+(item.tipe_post == 'halaman' ? 'halaman' : 'berita')+'/'+env.kunker+'/'+ item.post_gambar" 
+								class="img-fluid mb-4" 
+								:alt="item.judul_post"
+								style="object-fit: cover;" 
+								@error="(() => item.post_gambar = null)"
+							>	
+						</template>
+						<div v-html="item.isi_post" class="small"></div>
+						<p class="blog-post-meta badge info-post small">
+							<i class="bi bi-stack"></i> Kategori : <router-link :to="{path : '/list/'+item.kategori_post, query: {type : 'kategori', page: page}}">{{item.kategori_post}}</router-link>  |  
+							<i class="bi bi-tags-fill"></i> Tags : <LinkTags :tag="item.tag" :page="page" />
+						</p>
+						<hr />
+						<ImgListGalleryAlbum v-if="item.id_gallery_album > 0" :id_gallery_album="item.id_gallery_album" />	
+					</article>
+				</template>
+				<template v-else>
+					<OnProgresPage />
+				</template>
 			</template>
+			
 
 			<div v-else class="loading">
 				<article class="blog-post blog-post-list border-bottom rounded overflow-hidden p-1 pb-4 mb-1" aria-hidden="true">
@@ -123,7 +130,7 @@
 		<template v-if="isReady">
 			<div class="col-md-4">
 				<div class="position-sticky" style="top: 4rem;">
-					<template v-if="searchToday.length > 0">
+					<template v-if="searchToday.length > 0 && data">
 						<div class="list-template-opd surface">
 							<div class="list-header">
 								<h5 class="list-title">
@@ -131,20 +138,20 @@
 								</h5>
 							</div>
 							<div class="list-body">
-								<template v-for="(item) in searchToday" :key="item.id_post">
+								<template v-for="(item) in searchToday" :key="item.id">
 									<router-link 
-										:to="{path : '/berita/'+makeJudul(item.post_judul), query : {id: item.id_post} }" 
+										:to="{path : '/berita/'+makeJudul(item.judul_post), query : {id: item.id} }" 
 										class="truncate-text l-2 fw-bold"
-										:class="{isActive : currPage == item.id_post}"
+										:class="{isActive : currPage == item.id}"
 									>
-										<span>{{item.post_judul}}</span>
+										<span>{{item.judul_post}}</span>
 									</router-link>
 								</template>
 							</div>
 						</div>
 					</template>
 						
-					<template v-if="searchPopulerNews.length > 0">
+					<template v-if="searchPopulerNews.length > 0 && data">
 						<div class="list-template-opd surface">
 							<div class="list-header">
 								<h5 class="list-title">
@@ -152,21 +159,21 @@
 								</h5>
 							</div>
 							<div class="list-body">
-								<template v-for="(item) in searchPopulerNews.slice(0,4)" :key="item.id_post">
+								<template v-for="(item) in searchPopulerNews.slice(0,4)" :key="item.id">
 									<router-link 
-										:to="{path : '/berita/'+makeJudul(item.post_judul), query : {id: item.id_post} }" 
+										:to="{path : '/berita/'+makeJudul(item.judul_post), query : {id: item.id} }" 
 										class="d-flex justify-content-between align-items-center"
-										:class="{isActive : currPage == item.id_post}"
+										:class="{isActive : currPage == item.id}"
 									>
-										<span class="truncate-text l-1 fw-bold">{{item.post_judul}}</span>
-										<span class="badge info-post bg-transparent"><i class="bi bi-eye-fill"></i>&nbsp;{{item.jml_klik}}</span>
+										<span class="truncate-text l-1 fw-bold">{{item.judul_post}}</span>
+										<span class="badge info-post bg-transparent"><i class="bi bi-eye-fill"></i>&nbsp;{{item.jum_klik}}</span>
 									</router-link>
 								</template>
 							</div>
 						</div>
 					</template>
 
-					<template v-if="data.length > 0">
+					<template v-if="data && data.length > 0">
 						<div class="list-template-opd surface">
 							<div class="list-header">
 								<h5 class="list-title">
@@ -174,13 +181,12 @@
 								</h5>
 							</div>
 							<div class="list-body">
-								<template v-for="(item) in data.slice(0,4)" :key="item.id_post">
-									<router-link 
-										:to="{path : '/berita/'+makeJudul(item.post_judul), query : {id: item.id_post} }" 
+								<template v-for="(item, key) in data.slice(0,4)" :key="item.id">
+									<router-link v-if="currPage != key"
+										:to="{path : '/berita/'+makeJudul(item.judul_post), query : {id: item.id} }" 
 										class="truncate-text l-1 fw-bold"
-										:class="{isActive : currPage == item.id_post}"
 									>
-										<span>{{item.post_judul}}</span>
+										<span>{{item.judul_post}}</span>
 									</router-link>
 								</template>
 							</div>

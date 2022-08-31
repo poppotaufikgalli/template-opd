@@ -18,15 +18,20 @@ function beautifyDate1(argument) {
 }
 
 function beautifyDate2(argument) {
-	//var datetime = argument.split(" ");
-	var date = (argument).split("-");
-	var idx_bln = parseInt(date[1]);
-	var ndate = date[2]+" "+(lsbulanA[idx_bln])+" "+date[0];
-	return ndate
+	if(argument){
+		var date = (argument).split("-");
+		var idx_bln = parseInt(date[1]);
+		var ndate = date[2]+" "+(lsbulanA[idx_bln])+" "+date[0];
+		return ndate
+	}
+	return argument;
 }
 
 function makeJudul(argument) {
-	return argument.replace(/[^a-zA-Z\d\s]/g, '').split(' ').join('-').toLowerCase()
+	if(argument){
+		return argument.replace(/[^a-zA-Z\d\s]/g, '').split(' ').join('-').toLowerCase();
+	}
+	return argument;
 }
 
 export {getEnv, cleanTextP, beautifyDate1, beautifyDate2, makeJudul};

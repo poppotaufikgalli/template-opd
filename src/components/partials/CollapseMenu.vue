@@ -8,9 +8,6 @@
 				default: () => {},
 			},
 		},
-		mounted(){
-			console.log(this.submenu)
-		},
 		methods:{
 			dropdownStart(){
 				var dropdown = document.querySelector(".dropdown-menu");
@@ -48,10 +45,10 @@
 		</template>
 		<template v-else>
 			<li v-if="value.jenis_menu === 'M' && (value.id_post === null || value.id_post === '')">
-				<a href="#" class="dropdown-item">{{value.nama_menu}}</a>   
+				<a href="/#" class="dropdown-item">{{value.nama_menu}}</a>   
 			</li>
 			<li v-else-if="value.jenis_menu === 'M' && (value.id_post != null || value.id_post != '')">
-				<router-link class="dropdown-item" :to="{ path: '/pages/'+value.route, redirect: { name: 'halaman' }, query: { id_post: value.id_post, nama_menu: value.nama_menu }}">{{value.nama_menu}}</router-link>    
+				<router-link class="dropdown-item" :to="{ path: '/pages/'+value.route, query: { id_post: value.id_post, nama_menu: value.nama_menu }}">{{value.nama_menu}}</router-link>    
 			</li>
 			<li v-else>
 				<a :href="value.hyperlink" target="_blank" class="dropdown-item">{{value.nama_menu}}</a>

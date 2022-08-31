@@ -3,7 +3,7 @@
 	//import RightMenu from '@/components/partials/RightMenu';
 	import { useRoute } from 'vue-router';
 	import { getDataLimit } from '@/composables/Api';
-	import { beautifyDate1, beautifyDate2, makeJudul } from '@/composables/myfunc';
+	import { makeJudul } from '@/composables/myfunc';
 
 	const data = ref({});
 	const isReady = ref(false);
@@ -23,8 +23,12 @@
 
 	async function fetchData() {
 		routename.value = router.params.routes;
-		if(routename.value == 'kalendareven'){
+		if(routename.value == 'kalendar_even'){
 			routename.value = 'event';
+		}
+
+		if(routename.value == 'download_area'){
+			routename.value = 'download';
 		}
 
 		try{
@@ -40,24 +44,24 @@
 				page.value = "Berita"
 				for (let i = rdata.length - 1; i >= 0; i--) {
 					sdata[i] = {
-						"id" : rdata[i].id_post,
-						"judul" : rdata[i].post_judul,
-						"tgl_terbit" : beautifyDate1(rdata[i].tgl_terbit),
-						"user" : rdata[i].post_user,
+						"id" : rdata[i].id,
+						"judul" : rdata[i].judul_post,
+						"tanggal_terbit" : rdata[i].tanggal_terbit,
+						"user" : rdata[i].penulis,
 					}
 				}
 				data.value = sdata	
 			}else if(routename.value == 'pengumuman'){
 				page.value = "Pengumuman"
 				for (let i = rdata.length - 1; i >= 0; i--) {
-					let tgl_terbit = beautifyDate2(rdata[i].tgl_mulai_terbit)
-					if(rdata[i].tgl_akhir_terbit != '0000-00-00 00:00:00'){
-						tgl_terbit = tgl_terbit +' s/d '+ beautifyDate2(rdata[i].tgl_akhir_terbit)
+					let tanggal_terbit = rdata[i].tanggal_terbit
+					if(rdata[i].tgl_akhir != '0000-00-00 00:00:00' && rdata[i].tgl_akhir != null){
+						tanggal_terbit = tanggal_terbit +' s/d '+ rdata[i].tanggal_akhir
 					}
 					sdata[i] = {
-						"id" : rdata[i].id_pengumuman,
+						"id" : rdata[i].id,
 						"judul" : rdata[i].judul_pengumuman,
-						"tgl_terbit" : tgl_terbit,
+						"tanggal_terbit" : tanggal_terbit,
 						"user" : rdata[i].post_user,
 					}
 				}
@@ -65,14 +69,14 @@
 			}else if(routename.value == 'event'){
 				page.value = "Kalendar Event"
 				for (let i = rdata.length - 1; i >= 0; i--) {
-					let tgl_terbit = beautifyDate2(rdata[i].tgl_mulai_terbit)
-					if(rdata[i].tgl_akhir_terbit != '0000-00-00 00:00:00'){
-						tgl_terbit = tgl_terbit +' s/d '+ beautifyDate2(rdata[i].tgl_akhir_terbit)
+					let tanggal_event_mulai = rdata[i].tanggal_event_mulai
+					if(rdata[i].tgl_event_akhir != '0000-00-00 00:00:00' && rdata[i].tgl_event_akhir != 'null'){
+						tanggal_event_mulai = tanggal_event_mulai +' s/d '+ rdata[i].tanggal_event_akhir
 					}
 					sdata[i] = {
-						"id" : rdata[i].id_kalender_event,
+						"id" : rdata[i].id,
 						"judul" : rdata[i].judul_kalender_event,
-						"tgl_terbit" : tgl_terbit,
+						"tanggal_terbit" : tanggal_event_mulai,
 						"user" : rdata[i].post_user,
 					}
 				}
@@ -82,10 +86,10 @@
 				for (let i = rdata.length - 1; i >= 0; i--) {
 					
 					sdata[i] = {
-						"id" : rdata[i].id_gallery_album,
+						"id" : rdata[i].id,
 						"judul" : rdata[i].judul_album,
-						"tgl_terbit" : beautifyDate1(rdata[i].tgl_terbit),
-						"user" : rdata[i].post_user,
+						"tanggal_terbit" : rdata[i].tanggal_terbit,
+						"user" : rdata[i].yg_ngupload,
 					}
 				}
 				data.value = sdata	
@@ -140,7 +144,7 @@
 			<div v-if="error" class="alert alert-danger d-flex align-items-center" role="alert">
 				<i class="bi bi-exclamation-triangle-fill"></i><div>&nbsp;Error : {{ error }}</div>
 			</div>
-			<div class="list-template-opd">
+			<div class="list-template-opd mb-4 surface">
 				<div class="list-header">
 					<h4 class="list-title">
 						<span>Daftar {{page}}</span>	
@@ -155,7 +159,7 @@
 							>
 								{{ (item.judul).toUpperCase() }}
 								<span class="badge info-post small">
-									<i class="bi bi-calendar-fill"></i> {{ item.tgl_terbit }}  |  
+									<i class="bi bi-calendar-fill"></i> {{ item.tanggal_terbit }}  |  
 									<i class="bi bi-pen-fill"></i> Oleh {{item.user}}
 								</span>
 							</router-link>  
@@ -194,13 +198,13 @@
 		<div class="col-md-4">
 			<div class="list-template-opd surface">
 				<div class="list-footer mb-4">
-					<router-link :to="{path:'/list/berita'}" class="truncate-text">Daftar Album Berita</router-link>
+					<router-link :to="{path:'/list/berita'}" class="truncate-text">Daftar Berita</router-link>
 				</div>
 				<div class="list-footer mb-4">
-					<router-link :to="{path:'/list/pengumuman'}" class="truncate-text">Daftar Album Pengumuman</router-link>
+					<router-link :to="{path:'/list/pengumuman'}" class="truncate-text">Daftar Pengumuman</router-link>
 				</div>
 				<div class="list-footer mb-4">
-					<router-link :to="{path:'/list/kalendareven'}" class="truncate-text">Daftar Album Kalendar Even</router-link>
+					<router-link :to="{path:'/list/kalendar_even'}" class="truncate-text">Daftar Kalendar Even</router-link>
 				</div>
 				<div class="list-footer mb-4">
 					<router-link :to="{path:'/list/gallery_album'}" class="truncate-text">Daftar Album Gallery</router-link>

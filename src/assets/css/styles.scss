@@ -58,6 +58,16 @@ input.theme-switch:checked + label {
   color: var(--app-navbar-color)
 }
 
+@media only screen and (max-width: 992px) {
+  #menuNavHeader .navbar-nav {
+    margin-left: 10px!important;
+    margin-right: 10px!important;
+    padding: 10px;
+    width: 250px;
+    background-color: var(--app-navbar-bgcolor);
+  }
+}
+
 #menuNavHeader .navbar-nav .nav-link:hover {
   color: var(--bs-blue);
   border-bottom: 3px solid var(--bs-blue);
@@ -65,10 +75,6 @@ input.theme-switch:checked + label {
 
 #menuNavHeader .navbar-nav .nav-link.active {
   color: var(--bs-blue);
-}
-
-#carouselMainCarousel .carousel-item {
-  max-height: 45vh;
 }
 
 #carouselMainCarousel .carousel-indicators > button {
@@ -189,7 +195,6 @@ h1, h2, h3, h4, h5, h6 {
 .blog-footer {
   padding: 2.5rem 0;
   color: #727272;
-  text-align: center;
   background-color: var(--app-footer-bgcolor);
   border-top: .05rem solid #e5e5e5;
 }
@@ -223,6 +228,21 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 3px 3px 5px 0px var(--cshadow);
     -webkit-box-shadow: 3px 3px 5px 0px var(--cshadow);
     -moz-box-shadow: 3px 3px 5px 0px var(--cshadow);
+  }
+}
+
+.btn-circle-sm{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%!important;
+
+  &.cshadow{
+    box-shadow: 1px 1px 2px 0px var(--cshadow);
+    -webkit-box-shadow: 1px 1px 2px 0px var(--cshadow);
+    -moz-box-shadow: 1px 1px 2px 0px var(--cshadow);
   }
 }
 
@@ -336,6 +356,10 @@ h5.list-title{
     background-color: var(--app-text-color);
 
     & a:hover{
+      font-weight: bolder;
+    }
+
+    & a.text-link:hover{
       color: var(--app-background-color); 
       font-weight: bolder;
     }
@@ -489,7 +513,12 @@ h5.list-title{
 .badge {
   &.info-post{
     color: var(--app-navbar-color);
-    background-color : var(--app-bar-color)
+    background-color : var(--app-bar-color);
+  }
+
+  &.bg-tim{
+    color: var(--app-text-invert-color);
+    background-color: var(--app-navbar-color);
   }
 }
 
@@ -505,3 +534,38 @@ h5.list-title{
     color: var(--bs-blue);
   }
 }
+
+figure.table {
+  display: flex;
+  justify-content: center;
+}
+
+figure.table table{
+  width: 85%;
+}
+
+figure.table td{
+  padding-left: 10px;
+  padding-right: 10px;
+  border: 1px solid black;
+}
+figure.table tr:first-child td {  
+  font-weight: bold;
+  text-align: center;
+}
+
+figure.image img{
+  width: 100%;
+}
+
+figure.image {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+figure.image.image-style-side {
+	float: right;
+	margin-left: 1.5em;
+}
+

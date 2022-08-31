@@ -5,9 +5,12 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import '@/assets/css/styles.scss'
 //import "@/assets/css/template-opd.css"
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
-createApp(App).use(router).mount('#app')
+const pinia = createPinia()
+
+createApp(App).use(pinia).use(router).mount('#app')
 
 import "bootstrap/dist/js/bootstrap.js"

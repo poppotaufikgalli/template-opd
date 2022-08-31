@@ -1,6 +1,5 @@
 <script>
 	import LoadingPostView from '@/views/LoadingPostView';
-	import RightMenu from '@/components/partials/RightMenu';
 	import { getData } from '@/composables/Api';
 	import LinkTags from '@/components/partials/LinkTags';
 	import { cleanTextP, beautifyDate1, getEnv } from '@/composables/myfunc';
@@ -16,7 +15,6 @@
 			}
 		},
 		components:{
-			RightMenu,
 			LoadingPostView,
 			LinkTags,
 		},
@@ -46,9 +44,9 @@
 				// replace `getPost` with your data fetching util / API wrapper
 				//let response = [];
 				try{
-					let response = await getData('posting', 'id_post', this.$route.query.id);  
-					console.log(response.data)
-					this.item = response.data.posting[0]
+					let response = await getData('berita', 'id', this.$route.query.id);  
+					//console.log(response.data)
+					this.item = response.data.berita
 				} catch(err){
 					this.error = err.toString()
 				}
@@ -89,12 +87,6 @@
 				</p>
 			</article>
 			<LoadingPostView v-else class="loading"></LoadingPostView>
-		</div>
-
-		<div class="col-md-4">
-			<div class="position-sticky" style="top: 6rem;">
-				<RightMenu />
-			</div>
 		</div>
 	</div>
 </template>

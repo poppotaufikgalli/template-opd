@@ -2,7 +2,8 @@
 	import { ref, watch, computed } from 'vue'
 	import { useRoute } from 'vue-router';
 	import { getData } from '@/composables/Api';
-	import { beautifyDate1, getEnv, cleanTextP, makeJudul } from '@/composables/myfunc';
+	import { getEnv, cleanTextP, makeJudul } from '@/composables/myfunc';
+	import OnProgresPage from '@/components/partials/OnProgresPage';
 
 	const _ = require("lodash");
 	const moment = require("moment");
@@ -25,6 +26,7 @@
 		try{
 			let response = await getData('pengumuman');  
 			data.value = response.data.pengumuman;
+			console.log(data.value)
 		} catch(err){
 			error.value = err.toString()
 		}
@@ -51,35 +53,36 @@
 	})
 
 	function tayangPengumuman(item) {
-		var tayang = '';
+		var tayang = ["OPD"];
 		if(item.tayang_khusus == 'Y'){
-			tayang = tayang + "Khusus, ";
+			tayang.push("Khusus");
 		}
-		if(item.tayang_opd == 'Y'){
-			tayang = tayang + "OPD, ";
+		if(item.acc_tayang_portal == 'Y'){
+			tayang.push("PEMKO");
 		}
-		if(item.tayang_pemko == 'Y'){
-			tayang = tayang + "PEMKO";
-		}
-		return tayang;
+		return tayang.join(", ");
 	}
 
 	const searchToday = computed(()=> {
 		var currentDate =  moment(new Date()).format('YYYY-MM-DD');
 		return _.filter(data.value, (o) => {
-			return moment(o.tgl_mulai_terbit).isSame(currentDate, 'day');
+			return moment(o.tgl_terbit).isSame(currentDate, 'day');
 		});
 	})
 
-	function setCurrPage(id_pengumuman){
-		currPage.value = _.findKey(data.value, ['id_pengumuman', id_pengumuman]);
+	function setCurrPage(id){
+		currPage.value = _.findKey(data.value, ['id', id]);
 		maxPage.value = parseInt(currPage.value) +1
+	}
+
+	function trimRoute(namedRoute) {
+		return namedRoute.replace(/\s+/g,'_')
 	}
 
 	// fetch immediately
 	fetchData()
 	// ...then watch for url change
-	watch(router, fetchData)	
+	watch(router, fetchData)    
 </script>
 <template>
 	<div class="row g-5">
@@ -88,29 +91,42 @@
 				<i class="bi bi-exclamation-triangle-fill"></i><div>&nbsp;Error : {{ error }}</div>
 			</div>
 			<template v-if="isReady">
-				<article v-for="item in data.slice(currPage, maxPage)" :key="item.id_pengumuman" class="blog-post blog-post-list rounded overflow-hidden p-1 mb-1">
-					<h3 class="blog-post-title text-capitalize text-center">{{ item.judul_pengumuman }}</h3>
-					<div class="d-flex flex-column justify-content-center align-items-center mb-2">
+				<template v-if="data">
+					<article v-for="item in data.slice(currPage, maxPage)" :key="item.id" class="blog-post blog-post-list rounded overflow-hidden mb-4 surface">
+						<h3 class="blog-post-title text-capitalize">{{ item.judul_pengumuman }}</h3>
+						<p class="blog-post-meta badge info-post small">
+							<i class="bi bi-bookmark-star-fill"></i> {{item.no_pengumuman}} | 
+							<i class="bi bi-calendar-fill"></i> {{item.tanggal_terbit + ((item.tgl_akhir != null && item.tgl_akhir != '0000-00-00 00:00:00') ? " s/d "+ item.tanggal_akhir : '')}} |
+							<i class="bi bi-pen-fill"></i> Oleh <router-link :to="{path: '/list/'+item.penulis, query: {type : 'penulis', page: page} }">{{item.penulis}}</router-link>
+						</p>
+						<br/>
 						<template v-if="item.gambar">
 							<div class="overflow-hidden mb-4" style="max-height: 500px;">
 								<img 
 									:src="env.imgUrl+'posting/pengumuman/'+env.kunker+'/'+ item.gambar" 
 									class="img-fluid mb-4" 
 									:alt="item.judul_pengumuman"
-								>	
+								>   
 							</div>
 						</template>
-						<h5 class="text-decoration-underline small">Nomor : {{item.no_pengumuman}}</h5>
-						<span class="small">Terbit : {{beautifyDate1(item.tgl_mulai_terbit) + (item.tgl_akhir_terbit != '0000-00-00 00:00:00' ? " s/d "+ beautifyDate1(item.tgl_akhir_terbit) : '')}}</span>
-					</div>
-
-					<div v-html="cleanTextP(item.isi)" class="small"></div>
-					<p class="blog-post-meta badge info-post small">
-						<i class="bi bi-box"></i> Unit Kerja : {{ item.nunker }}  |  
-						<i class="bi bi-check2-square"></i> Tayang {{tayangPengumuman(item)}}  |
-						<i class="bi bi-pen-fill"></i> Oleh <router-link :to="{path: '/list/'+item.post_user, query: {type : 'post_user', page: page} }">{{item.post_user}}</router-link>
-					</p>
-				</article>
+						<div v-html="cleanTextP(item.isi)" class="small"></div>
+						<hr>
+						<template v-if="item.guid">
+							<p>
+								<span class="small">Lampiran : 
+									<router-link :to="{path: '/Download_Area/'+trimRoute(item.nama_file), query: {type : 'id', page: page} }">{{item.nama_file}}</router-link>
+								</span>
+							</p>
+						</template>
+						<p class="blog-post-meta badge info-post small mb-1">
+							<i class="bi bi-box"></i> Unit Kerja : {{ item.nunker }} | 
+							<i class="bi bi-check2-square"></i> Tayang {{tayangPengumuman(item)}}
+						</p>
+					</article>
+				</template>
+				<template v-else>
+					<OnProgresPage />
+				</template>
 			</template>
 
 			<div v-else class="loading">
@@ -139,19 +155,19 @@
 		<template v-if="isReady">
 			<div class="col-md-4">
 				<div class="position-sticky" style="top: 4rem;">
-					<template v-if="searchToday.length > 0">
+					<template v-if="data && searchToday.length > 0">
 						<div class="list-template-opd surface">
 							<div class="list-header">
 								<h5 class="list-title">
-									<span>{{page}} Hari Ini</span>	
+									<span>{{page}} Hari Ini</span>  
 								</h5>
 							</div>
 							<div class="list-body">
-								<template v-for="(item) in searchToday" :key="item.id_pengumuman">
-									<router-link 
-										:to="{path : '/pengumuman/'+makeJudul(item.judul_pengumuman), query : {id: item.id_pengumuman} }" 
+								<template v-if="searchToday">
+									<router-link v-for="item in searchToday" :key="item.id"
+										:to="{path : '/pengumuman/'+makeJudul(item.judul_pengumuman), query : {id: item.id} }" 
 										class="truncate-text l-2 fw-bold"
-										:class="{isActive : currPage == item.id_pengumuman}"
+										:class="{isActive : currPage == item.id}"
 									>
 										<span>{{item.judul_pengumuman}}</span>
 									</router-link>
@@ -160,19 +176,19 @@
 						</div>
 					</template>
 
-					<template v-if="data.length > 0">
+					<template v-if="data && searchPengumumanKhusus.length > 0">
 						<div class="list-template-opd surface">
 							<div class="list-header">
 								<h5 class="list-title">
-									<span>{{page}} Khusus</span>	
+									<span>{{page}} Khusus</span>    
 								</h5>
 							</div>
 							<div class="list-body">
-								<template v-for="(item) in searchPengumumanKhusus" :key="item.id_pengumuman">
+								<template v-for="(item) in searchPengumumanKhusus" :key="item.id">
 									<router-link 
-										:to="{path : '/pengumuman/'+makeJudul(item.judul_pengumuman), query : {id: item.id_pengumuman} }" 
+										:to="{path : '/pengumuman/'+makeJudul(item.judul_pengumuman), query : {id: item.id} }" 
 										class="truncate-text l-2 fw-bold"
-										:class="{isActive : currPage == item.id_pengumuman}"
+										:class="{isActive : currPage == item.id}"
 									>
 										<span>{{item.judul_pengumuman}}</span>
 									</router-link>
@@ -181,19 +197,19 @@
 						</div>
 					</template>
 
-					<template v-if="data.length > 0">
+					<template v-if="data && searchPengumumanPemko.length > 0">
 						<div class="list-template-opd surface">
 							<div class="list-header">
 								<h5 class="list-title">
-									<span>{{page}} PEMKO</span>	
+									<span>{{page}} PEMKO</span> 
 								</h5>
 							</div>
 							<div class="list-body">
-								<template v-for="(item) in searchPengumumanPemko" :key="item.id_pengumuman">
+								<template v-for="(item) in searchPengumumanPemko" :key="item.id">
 									<router-link 
-										:to="{path : '/pengumuman/'+makeJudul(item.judul_pengumuman), query : {id: item.id_pengumuman} }" 
+										:to="{path : '/pengumuman/'+makeJudul(item.judul_pengumuman), query : {id: item.id} }" 
 										class="truncate-text l-2 fw-bold"
-										:class="{isActive : currPage == item.id_pengumuman}"
+										:class="{isActive : currPage == item.id}"
 									>
 										<span>{{item.judul_pengumuman}}</span>
 									</router-link>
@@ -202,19 +218,19 @@
 						</div>
 					</template>
 
-					<template v-if="data.length > 0">
+					<template v-if="data && searchPengumumanOPD.length > 0">
 						<div class="list-template-opd surface">
 							<div class="list-header">
 								<h5 class="list-title">
-									<span>{{page}} OPD</span>	
+									<span>{{page}} OPD</span>   
 								</h5>
 							</div>
 							<div class="list-body">
-								<template v-for="(item) in searchPengumumanOPD" :key="item.id_pengumuman">
+								<template v-for="(item) in searchPengumumanOPD" :key="item.id">
 									<router-link 
-										:to="{path : '/pengumuman/'+makeJudul(item.judul_pengumuman), query : {id: item.id_pengumuman} }" 
+										:to="{path : '/pengumuman/'+makeJudul(item.judul_pengumuman), query : {id: item.id} }" 
 										class="truncate-text l-2 fw-bold"
-										:class="{isActive : currPage == item.id_pengumuman}"
+										:class="{isActive : currPage == item.id}"
 									>
 										<span>{{item.judul_pengumuman}}</span>
 									</router-link>

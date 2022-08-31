@@ -2,7 +2,7 @@
 	import { ref, watch, computed } from 'vue'
 	import { useRoute } from 'vue-router';
 	import { getData } from '@/composables/Api';
-	import { getEnv, cleanTextP, makeJudul } from '@/composables/myfunc';
+	import { getEnv, makeJudul } from '@/composables/myfunc';
 	import OnProgresPage from '@/components/partials/OnProgresPage';
 
 	const _ = require("lodash");
@@ -20,11 +20,11 @@
 
 	async function fetchData() {
 		isReady.value = false;
-		var routename = router.params.page ? router.params.page : 'event';
+		var routename = router.params.page ? router.params.page : 'gallery';
 		page.value = routename
 		try{
 			let response = await getData(routename);  
-			data.value = response.data.event
+			data.value = response.data.gallery
 			console.log(data.value)
 		} catch(err){
 			error.value = err.toString()
@@ -51,6 +51,10 @@
 		maxPage.value = parseInt(currPage.value) +1
 	}
 
+	function downloadFile(filename) {
+		window.open(env.apiUrl+'api/getDownloadGallery/'+env.kunker+'/'+filename)
+	}
+
 	// fetch immediately
 	fetchData()
 	// ...then watch for url change
@@ -65,23 +69,43 @@
 			<template v-if="isReady">
 				<template v-if="data.length > 0">
 					<article v-for="item in data.slice(currPage, maxPage)" :key="item.id" class="blog-post blog-post-list rounded overflow-hidden mb-4 surface">
-						<h3 class="blog-post-title text-capitalize">{{ item.judul_kalender_event }}</h3>
+						<h3 class="blog-post-title text-capitalize">{{ item.judul_gallery }}</h3>
 						<p class="blog-post-meta badge info-post small">
-							<i class="bi bi-calendar-fill"></i> {{item.tanggal_event_mulai + ((item.tgl_event_akhir != null && item.tgl_event_akhir != '0000-00-00 00:00:00') ? " s/d "+ item.tanggal_event_akhir : '')}}  |  
-							<i class="bi bi-pen-fill"></i> Oleh <router-link :to="{path: '/list/'+item.yg_bikin, query: {type : 'yg_bikin', page: page} }">{{item.yg_bikin}}</router-link>
+							<i class="bi bi-calendar-fill"></i> {{item.tgl_gambar}}  |  
+							<i class="bi bi-pen-fill"></i> Oleh <router-link :to="{path: '/list/'+item.user_yg_buat, query: {type : 'user_yg_buat', page: page} }">{{item.user_yg_buat}}</router-link>
 						</p>
 						<br/>
 						<template v-if="item.gambar">
-							<div class="overflow-hidden mb-4" style="max-height: 500px;">
+							<div class="d-flex justify-content-center">
 								<img 
-									:src="env.imgUrl+'posting/'+(item.tipe_post == 'halaman' ? 'halaman' : 'event')+'/'+env.kunker+'/'+ item.gambar" 
+									:src="env.imgUrl+'posting/galeri/'+env.kunker+'/'+ item.gambar" 
 									:alt="item.judul_kalender_event"
 									class="img-fluid mb-4" 
 									style="object-fit: contain; overflow: hidden;" 
 								>	
 							</div>
 						</template>
-						<div v-html="cleanTextP(item.ket_kalender_event)" class="small"></div>
+						<table class="table small">
+							<tr>
+								<td width="20%">Keterangan Gallery</td>
+								<td>:</td>
+								<td width="80%">{{item.ket_gallery}}</td>
+							</tr>
+							<tr>
+								<td>Judul Album Gallery</td>
+								<td>:</td>
+								<td>{{item.judul_album}}</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td></td>
+								<td>
+									<div class="d-flex justify-content-start align-items-center gap-2">
+										<a @click="downloadFile(item.gambar)" class="btn btn-sm btn-primary" target="_blank" download><i class="bi bi-cloud-download"></i> | Lihat / Donwload File</a>
+									</div>
+								</td>
+							</tr>
+						</table>
 						<hr>
 						<p class="blog-post-meta badge info-post small mb-1">
 							<i class="bi bi-box"></i> Unit Kerja : {{ item.nunker }}
@@ -128,11 +152,11 @@
 							<div class="list-body">
 								<template v-for="(item) in searchEventAktif" :key="item.id">
 									<router-link 
-										:to="{path : '/kalendar_even/'+makeJudul(item.judul_kalender_event), query : {id: item.id} }" 
+										:to="{path : '/gallery_item/'+makeJudul(item.judul_gallery), query : {id: item.id} }" 
 										class="truncate-text l-2 fw-bold"
 										:class="{isActive : currPage == item.id}"
 									>
-										<span>{{item.judul_kalender_event}}</span>
+										<span>{{item.judul_gallery}}</span>
 									</router-link>
 								</template>
 							</div>
@@ -149,11 +173,11 @@
 							<div class="list-body">
 								<template v-for="(item) in data.slice(0,4)" :key="item.id">
 									<router-link 
-										:to="{path : '/kalendar_even/'+makeJudul(item.judul_kalender_event), query : {id: item.id} }" 
+										:to="{path : '/gallery_item/'+makeJudul(item.judul_gallery), query : {id: item.id} }" 
 										class="truncate-text l-2 fw-bold"
 										:class="{isActive : currPage == item.id}"
 									>
-										<span>{{item.judul_kalender_event}}</span>
+										<span>{{item.judul_gallery}}</span>
 									</router-link>
 								</template>
 							</div>
@@ -161,7 +185,7 @@
 					</template>
 					<div class="list-template-opd surface">
 						<div class="list-footer">
-							<router-link :to="{path:'/list/kalendar_even'}" class="truncate-text">Lihat Daftar Kalendar Event</router-link>
+							<router-link :to="{path:'/list/gallery_album'}" class="truncate-text">Lihat Daftar Album Gallery</router-link>
 						</div>
 					</div>
 				</div>

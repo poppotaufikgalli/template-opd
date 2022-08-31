@@ -2,37 +2,49 @@
 	import { ref, watch } from 'vue'
 	import { useRoute } from 'vue-router';
 	import { getData } from '@/composables/Api';
-	import { getEnv } from '@/composables/myfunc';
+	import TableView from '@/components/partials/PranalaTableView';
 
-	//const _ = require("lodash");
+	const _ = require("lodash");
+	//const moment = require("moment");
+
 	const data = ref({});
 	const isReady = ref(false);
 	const router = useRoute();
 	const page = ref('');
-	const env = getEnv();
-	//const berita_hari_ini = ref({})
+	//const env = getEnv();
+	const currPage = ref(0);
+	const maxPage = ref(1);
+	const error = ref(null);
 
 	async function fetchData() {
-		//console.log('page')
 		isReady.value = false;
-		
+		var routename = router.params.judul ? router.params.judul : 'aplikasi';
+		page.value = routename
 		try{
-			let response = await getData('halaman', 'id', router.query.id_post);  
-			data.value = response.data.halaman
+			let response = await getData("pranala", routename, routename);  
+			data.value = response.data.pranala
 			console.log(data.value)
-			
 		} catch(err){
-			console.log(err)
+			error.value = err.toString()
+		}
+
+		if(router.query.id){
+			var id = router.query.id;
+			setCurrPage(id)
 		}
 		
 		isReady.value = true;
 	}
 
+	function setCurrPage(id){
+		currPage.value = _.findKey(data.value, ['id', id]);
+		maxPage.value = parseInt(currPage.value) +1
+	}
+
 	// fetch immediately
 	fetchData()
 	// ...then watch for url change
-	watch(router, fetchData)
-
+	watch(router, fetchData)	
 </script>
 <template>
 	<div class="row g-5">
@@ -40,28 +52,11 @@
 			<div v-if="error" class="alert alert-danger d-flex align-items-center" role="alert">
 				<i class="bi bi-exclamation-triangle-fill"></i><div>&nbsp;Error : {{ error }}</div>
 			</div>
-
 			<template v-if="isReady">
-				<article class="blog-post blog-post-list overflow-hidden surface">
-					<h3 class="blog-post-title text-capitalize">{{ data.judul_post }}</h3>
-					<template v-if="data.post_gambar">
-						<img 
-							:src="env.imgUrl+'posting/halaman/'+env.kunker+'/'+ data.post_gambar" 
-							class="col-md-8" 
-							style="object-fit: cover;" 
-							:alt="data.judul_post"
-							@error="(() => data.post_gambar = null)"
-						>   
-					</template>
-					<div v-html="data.isi_post" class="small" :style="data.post_gambar ? 'min-height: 330px' : 'width:100%'"></div>
-					<p class="blog-post-meta badge info-post small">
-						<i class="bi bi-calendar-fill"></i> {{ data.tanggal_tulis }}  |  
-						<i class="bi bi-pen-fill"></i> Oleh <router-link :to="{path: '/list/'+data.penulis, query: {type : 'penulis', page: page} }">{{data.penulis}}</router-link>  |  
-						<i class="bi bi-stack"></i> Kategori : <router-link :to="{path : '/list/'+data.kategori_post, query: {type : 'kategori', page: page}}">{{data.kategori_post}}</router-link>
-					</p>
-					<hr />
-					<ImgListGalleryAlbum v-if="data.id_gallery_album > 0" :id_gallery_album="data.id_gallery_album" />  
+				<article class="blog-post blog-post-list rounded overflow-hidden p-1 mb-1">
+					<TableView :data="data" />
 				</article>
+				
 			</template>
 
 			<div v-else class="loading">

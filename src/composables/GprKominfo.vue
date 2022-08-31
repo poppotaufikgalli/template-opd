@@ -8,7 +8,7 @@
 	}
 </script>
 <template>
-	<div class="mb-4">
+	<div class="mb-4 d-none d-sm-block">
 		<div class="list-template-opd surface">
 			<div class="list-header my-2">
 				<h3 class="list-title">

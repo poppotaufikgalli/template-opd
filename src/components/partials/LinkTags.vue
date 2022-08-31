@@ -1,12 +1,12 @@
 <script>
 	export default {
-		props: ['tags', 'page'],
+		props: ['tag', 'page'],
 		mounted() {
 			//console.log(this.tags)
 		},
 		data(){
 			return {
-				newTags: (this.tags).split(', ')
+				newTags: (this.tag).split(',')
 			}
 		}
 	}
