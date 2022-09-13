@@ -1,8 +1,10 @@
 <script setup>
-	import { ref, watch } from 'vue'
+	import { ref, watch, onUpdated } from 'vue'
 	import { useRoute } from 'vue-router';
-	import { getData } from '@/composables/Api';
+	import { useActiveMeta } from 'vue-meta'
+	import { getData, setMeta } from '@/composables/Api';
 	import { getEnv } from '@/composables/myfunc';
+	import ogImage from "@/assets/img/logo-tpi.png"
 
 	//const _ = require("lodash");
 	const data = ref({});
@@ -12,6 +14,21 @@
 	const env = getEnv();
 	//const berita_hari_ini = ref({})
 
+	const activeMeta = useActiveMeta()
+
+	onUpdated(() => {
+		if(data.value){
+			//console.log("update Meta galleri")
+			var curr = data.value;
+			var metaGbr = window.location.origin+ogImage;
+			if(curr.post_gambar){
+				metaGbr = env.imgUrl+'posting/halaman/'+env.kunker+'/'+ curr.post_gambar;
+			}
+
+			setMeta(activeMeta, curr.judul_post, curr.isi_post , curr.penulis, metaGbr)
+		}
+	})
+
 	async function fetchData() {
 		//console.log('page')
 		isReady.value = false;
@@ -19,7 +36,7 @@
 		try{
 			let response = await getData('halaman', 'id', router.query.id_post);  
 			data.value = response.data.halaman
-			console.log(data.value)
+			//console.log(data.value)
 			
 		} catch(err){
 			console.log(err)

@@ -4,6 +4,7 @@
 	import SambutanView from '@/components/partials/SambutanView';
 	import ModalPengumumanKhusus from '@/components/partials/ModalPengumumanKhusus';
 
+	import InfografisDiskominfo from '@/composables/InfografisDiskominfo';
 	import GprKominfo from '@/composables/GprKominfo';
 	import RightMenu from '@/components/partials/RightMenu';
 	import { getMainPageInfo } from '../composables/Api';
@@ -30,7 +31,6 @@
 
 	onBeforeMount(async() => {
 		const data = await getMainPageInfo()
-		console.log(data)
 		sambutan.value = data.data.kata_sambutan;
 		//console.log(banner.value)
 
@@ -48,7 +48,7 @@
 		//console.log(data.data.berita_gabung)
 
 		allberita.value = data.data.berita_gabung;
-		lenBerita.value = allberita.value.length
+		lenBerita.value = allberita.value != undefined ? allberita.value.length : 0
 		pagging();
 
 		isReady.value = true;
@@ -63,7 +63,7 @@
 					//maxPage.value = lenBerita.value
 					isDisabledPrev.value = false;
 				}
-				berita.value = allberita.value.slice(currPage.value,maxPage.value);
+				berita.value = allberita.value != undefined ? allberita.value.slice(currPage.value,maxPage.value) : null;
 				break;
 
 			case "prev":
@@ -73,7 +73,7 @@
 					maxPage.value = lenBerita.value
 					isDisabledPrev.value = true;
 				}
-				berita.value = allberita.value.slice(currPage.value,maxPage.value);
+				berita.value = allberita.value != undefined ? allberita.value.slice(currPage.value,maxPage.value) : null;
 				break;
 
 			default:
@@ -85,8 +85,8 @@
 					isDisabledNext.value = true;
 					isDisabledPrev.value = false;
 				}
-				berita.value = allberita.value.slice(currPage.value,maxPage.value);
-				console.log(berita.value)
+				berita.value = allberita.value != undefined ? allberita.value.slice(currPage.value,maxPage.value) : null;
+				//console.log(berita.value)
 		}
 	}
 
@@ -140,7 +140,7 @@
 					<h3 class="list-title">
 						<div class="d-flex justify-content-between">
 							<span>Berita</span>
-							<nav v-if="berita.length > 3" class="d-flex gap-2 align-items-center" aria-label="Pagination">
+							<nav v-if="berita && berita.length > 3" class="d-flex gap-2 align-items-center" aria-label="Pagination">
 								<router-link :to="{path:'/list/berita'}" class="btn btn-sm btn-outline active">Lihat Daftar Berita</router-link>
 								<button @click="nextPagging" class="btn btn-sm btn-outline" :disabled="isDisabledNext">&lt;&lt;</button>
 								<button @click="prevPagging" class="btn btn-sm btn-outline" :disabled="isDisabledPrev">&gt;&gt;</button>
@@ -183,6 +183,7 @@
 				<template v-if="sambutan">
 					<SambutanView v-if="isReady" :sambutan="sambutan" />	
 				</template>
+				<InfografisDiskominfo />
 				<GprKominfo />
 				<template v-if="pranala_luar">
 					<RightMenu :data="pranala_luar"/>	

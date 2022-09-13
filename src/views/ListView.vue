@@ -22,6 +22,8 @@
 	const error = ref('')
 
 	async function fetchData() {
+		data.value = {}
+		error.value = ''
 		routename.value = router.params.routes;
 		if(routename.value == 'kalendar_even'){
 			routename.value = 'event';
@@ -33,12 +35,13 @@
 
 		try{
 			let response = await getDataLimit(routename.value, null, null, limitLen.value, offsetLen.value);  
+			//console.log(response.data)
 			let rdata = response.data[routename.value]
 			var Ldata = response.data.length;
 			var Cdata = response.data.count;
 			maxPage.value = Math.ceil(Ldata / limitLen.value);
 			//console.log(maxPage.value)
-			console.log(response)
+			//console.log(response)
 			let sdata = [];
 			if(routename.value == 'berita'){
 				page.value = "Berita"
@@ -119,6 +122,7 @@
 			//console.log(data)
 		} catch(err){
 			error.value = err.toString()
+			//console.log(error.value)
 		}
 		
 		isReady.value = true;
@@ -141,9 +145,6 @@
 <template>
 	<div class="row g-5">
 		<div class="col-md-8">
-			<div v-if="error" class="alert alert-danger d-flex align-items-center" role="alert">
-				<i class="bi bi-exclamation-triangle-fill"></i><div>&nbsp;Error : {{ error }}</div>
-			</div>
 			<div class="list-template-opd mb-4 surface">
 				<div class="list-header">
 					<h4 class="list-title">
@@ -152,6 +153,12 @@
 				</div>
 				<div class="list-body">
 					<template v-if="isReady">
+						<article v-if="error || data.length == 0" class="blog-post blog-post-list pt-2 p-1 mt-2 mb-0 notAvailableCard">
+							<div class="d-flex justify-content-center align-items-center gap-2" style="min-height: 35vh">
+								<i class="bi bi-exclamation-triangle-fill text-danger h3"></i>
+								<h3>Daftar {{page}} Belum Tersedia</h3>
+							</div>
+						</article>	
 						<article v-for="item in data" :key="item.id" class="blog-post blog-post-list pt-2 p-1 mb-0">
 							<router-link 
 								:to="{path : '/'+routename+'/'+makeJudul(item.judul), query : {id: item.id} }" 

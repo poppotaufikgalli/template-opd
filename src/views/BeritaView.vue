@@ -1,12 +1,15 @@
 <script setup>
-	import { ref, watch, computed } from 'vue'
+	import { ref, watch, computed, onUpdated } from 'vue'
+	//import { useMeta } from 'vue-meta'
+	import { useActiveMeta } from 'vue-meta'
 	import LinkTags from '@/components/partials/LinkTags';
 	import ImgListGalleryAlbum from '@/components/partials/ImgListGalleryAlbum';
 	import OnProgresPage from '@/components/partials/OnProgresPage';
 	import { useRoute } from 'vue-router';
-	import { getData } from '@/composables/Api';
+	import { getData, setMeta } from '@/composables/Api';
 	import { getEnv, makeJudul } from '@/composables/myfunc';
 	import { useCounterStore } from '@/stores/counter'
+	import ogImage from "@/assets/img/logo-tpi.png"
 
 	const _ = require("lodash");
 	const moment = require("moment");
@@ -22,6 +25,26 @@
 
 	const store = useCounterStore()
 
+	const activeMeta = useActiveMeta()
+
+	onUpdated(() => {
+		if(data.value){
+			var curr = _.find(data.value, function(e, i) {
+				return i === currPage.value;
+			});
+			
+			if(curr && page.value == 'berita'){
+				//console.log("update Meta Berita")
+				var metaGbr = window.location.origin+ogImage;
+				if(curr.post_gambar){
+					metaGbr = env.imgUrl+'posting/berita/'+env.kunker+'/'+ curr.post_gambar;
+				}
+
+				setMeta(activeMeta, curr.judul_post, curr.isi, curr.penulis, metaGbr)
+			}
+		}
+	})
+
 	async function fetchData() {
 		isReady.value = false;
 		var routename = router.params.page ? router.params.page : 'berita';
@@ -29,7 +52,7 @@
 		try{
 			let response = await getData('berita');  
 			data.value = response.data.berita
-			console.log(data.value)
+			//console.log(page.value)
 		} catch(err){
 			error.value = err.toString()
 		}
@@ -62,7 +85,7 @@
 	// fetch immediately
 	fetchData()
 	// ...then watch for url change
-	watch(router, fetchData)	
+	watch(router, fetchData)
 </script>
 <template>
 	<div class="row g-4">

@@ -1,9 +1,11 @@
 <script setup>
-	import { ref, watch, computed } from 'vue'
+	import { ref, watch, computed, onUpdated } from 'vue'
 	import { useRoute } from 'vue-router';
-	import { getData } from '@/composables/Api';
+	import { useActiveMeta } from 'vue-meta'
+	import { getData, setMeta } from '@/composables/Api';
 	import { getEnv, cleanTextP, makeJudul } from '@/composables/myfunc';
 	import OnProgresPage from '@/components/partials/OnProgresPage';
+	import ogImage from "@/assets/img/logo-tpi.png"
 
 	const _ = require("lodash");
 	const moment = require("moment");
@@ -18,6 +20,26 @@
 	//const hari_ini = ref({})
 	const error = ref(null)
 
+	const activeMeta = useActiveMeta()
+
+	onUpdated(() => {
+		if(data.value){
+			var curr = _.find(data.value, function(e, i) {
+				return i === currPage.value;
+			});
+			
+			if(curr && page.value == 'event'){
+				console.log("update Meta event")
+				var metaGbr = window.location.origin+ogImage;
+				if(curr.gambar){
+					metaGbr = env.imgUrl+'posting/event/'+env.kunker+'/'+ curr.gambar;
+				}
+
+				setMeta(activeMeta, curr.judul_kalender_event, curr.ket_kalender_event, curr.yg_bikin, metaGbr)
+			}
+		}
+	})
+
 	async function fetchData() {
 		isReady.value = false;
 		var routename = router.params.page ? router.params.page : 'event';
@@ -25,7 +47,7 @@
 		try{
 			let response = await getData(routename);  
 			data.value = response.data.event
-			console.log(data.value)
+			//console.log(data.value)
 		} catch(err){
 			error.value = err.toString()
 		}
@@ -74,7 +96,7 @@
 						<template v-if="item.gambar">
 							<div class="overflow-hidden mb-4" style="max-height: 500px;">
 								<img 
-									:src="env.imgUrl+'posting/'+(item.tipe_post == 'halaman' ? 'halaman' : 'event')+'/'+env.kunker+'/'+ item.gambar" 
+									:src="env.imgUrl+'posting/event/'+env.kunker+'/'+ item.gambar" 
 									:alt="item.judul_kalender_event"
 									class="img-fluid mb-4" 
 									style="object-fit: contain; overflow: hidden;" 

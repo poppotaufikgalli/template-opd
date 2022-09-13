@@ -104,6 +104,24 @@ async function checkFileExist(type, file) {
     return null
 }
 
+function setMeta(activeMeta, judul, isi, penulis, gambar) {
+    //console.log("update Meta")
+
+    activeMeta.title = judul.slice(0,70);
+    activeMeta.description = isi.slice(0,150);
+    activeMeta.author = penulis;
+
+    activeMeta.og.title.content = activeMeta.title;
+    activeMeta.og.description.content = activeMeta.description;
+    activeMeta.og.image.content = gambar;
+
+    activeMeta.twitter.title.content = activeMeta.title;
+    activeMeta.twitter.description.content = activeMeta.description;
+    activeMeta.twitter.image.content = gambar;
+
+    return activeMeta;
+}
+
 export {
     getOPDInfo, 
     getMainPageInfo, 
@@ -120,4 +138,5 @@ export {
     getDataTags, 
     getListInfo,
     checkFileExist,
+    setMeta,
 };

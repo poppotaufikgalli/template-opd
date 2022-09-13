@@ -1,9 +1,12 @@
 <script setup>
-	import { ref, watch, computed } from 'vue'
+	import { ref, watch, computed, onUpdated } from 'vue';
+	//import { useMeta } from 'vue-meta';
+	import { useActiveMeta } from 'vue-meta';
 	import { useRoute } from 'vue-router';
-	import { getData } from '@/composables/Api';
+	import { getData, setMeta } from '@/composables/Api';
 	import { getEnv, cleanTextP, makeJudul } from '@/composables/myfunc';
 	import OnProgresPage from '@/components/partials/OnProgresPage';
+	import ogImage from "@/assets/img/logo-tpi.png"
 
 	const _ = require("lodash");
 	const moment = require("moment");
@@ -18,22 +21,39 @@
 	//const hari_ini = ref({})
 	const error = ref(null)
 
+	const activeMeta = useActiveMeta()
+
+	onUpdated(() => {
+		if(data.value){
+			var curr = _.find(data.value, function(e, i) {
+				return i === currPage.value;
+			});
+			
+			if(curr && page.value == 'pengumuman'){
+				//console.log("update Meta pengumuman")
+				var metaGbr = window.location.origin+ogImage;
+				if(curr.gambar){
+					metaGbr = env.imgUrl+'posting/pengumuman/'+env.kunker+'/'+ curr.gambar;
+				}
+
+				setMeta(activeMeta, curr.judul_pengumuman, curr.isi, curr.penulis, metaGbr)
+			}
+		}
+	})
+
 	async function fetchData() {
-		console.log("PengumumanView")
 		isReady.value = false;
 		var routename = router.params.page ? router.params.page : 'pengumuman';
 		page.value = routename
 		try{
 			let response = await getData('pengumuman');  
 			data.value = response.data.pengumuman;
-			console.log(data.value)
 		} catch(err){
 			error.value = err.toString()
 		}
 
 		if(router.query.id){
 			var id = router.query.id;
-			console.log(id)
 			setCurrPage(id)
 		}
 		

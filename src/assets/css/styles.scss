@@ -569,3 +569,10 @@ figure.image.image-style-side {
 	margin-left: 1.5em;
 }
 
+.notAvailableCard{
+  background: linear-gradient(rgba(255,255,255,.3), rgba(255,255,255,.3)), url("@/assets/img/logo-tpi.png");
+  background-repeat: no-repeat;
+  background-position: -35%;
+  background-size: contain;
+}
+

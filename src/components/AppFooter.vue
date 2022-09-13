@@ -42,10 +42,12 @@
     },
     setup(){
       const logo = require('@/assets/img/logo-tpi.png');
+      const logoTik = require('@/assets/img/logo-tik.png');
       const env = getEnv();
       return{
         logo,
         env,
+        logoTik,
       }
     },
   }
@@ -106,13 +108,13 @@
                     <span>Berita Populer</span>
                   </h3>
                 </div>
-                <template v-for="(item) in berita_populer" :key="item.id">
+                <template v-for="(item) in berita_populer.slice(0,3)" :key="item.id">
                   <router-link 
                     :to="{path : '/berita/'+makeJudul(item.judul_post), query : {id: item.id} }" 
                     class="d-flex justify-content-between align-items-center border-bottom py-1"
                   >
                     <span class="truncate-text lh-1">{{item.judul_post}}</span>
-                    <span class="badge text-muted info-post bg-transparent"><i class="bi bi-calendar-fill"></i>&nbsp;{{item.tanggal_terbit}}</span>
+                    <span class="badge info-post bg-transparent"><i class="bi bi-calendar-fill"></i>&nbsp;{{item.tanggal_terbit}}</span>
                   </router-link>
                 </template>
               </div>  
@@ -124,7 +126,7 @@
                     <span>Pengumuman Khusus</span>
                   </h3>
                 </div>
-                <template v-for="(item) in pengumuman_khusus" :key="item.id">
+                <template v-for="(item) in pengumuman_khusus.slice(0,3)" :key="item.id">
                   <router-link 
                     :to="{path : '/berita/'+makeJudul(item.judul_pengumuman), query : {id: item.id} }" 
                     class="d-flex justify-content-between align-items-center border-bottom py-1"
@@ -142,7 +144,7 @@
                     <span>Kalender Event</span>
                   </h3>
                 </div>
-                <template v-for="(item) in event_terbit" :key="item.id">
+                <template v-for="(item) in event_terbit.slice(0,3)" :key="item.id">
                   <router-link 
                     :to="{path : '/berita/'+makeJudul(item.judul_kalender_event), query : {id: item.id} }" 
                     class="d-flex justify-content-between align-items-center border-bottom py-1"
@@ -157,7 +159,7 @@
         </div> 
         <div class="col-md-12 text-center">
           <hr class="my-2">
-          <p class="small">Design by <span class="badge bg-tim"> TIK Tim </span> <a href="https://kominfo.tanjungpinangkota.go.id">Diskominfo Tanjungpinang</a>@2022</p>
+          <p class="small">Design by <img v-bind:src="logoTik" height="25"> <a href="https://kominfo.tanjungpinangkota.go.id">Diskominfo Tanjungpinang</a>@2022</p>
         </div>
       </div>
       <FButton />

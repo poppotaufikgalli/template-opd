@@ -158,4 +158,5 @@
       </div>
     </nav>
   </div>
+  <div id="modalGambarContainer"></div>
 </template>

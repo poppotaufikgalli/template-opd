@@ -1,10 +1,12 @@
 <script setup>
-	import { ref, watch, computed } from 'vue'
+	import { ref, watch, computed, onUpdated } from 'vue'
 	import { useRoute } from 'vue-router';
-	import { getData } from '@/composables/Api';
+	import { useActiveMeta } from 'vue-meta'
+	import { getData, setMeta } from '@/composables/Api';
 	import { getEnv, cleanTextP, makeJudul } from '@/composables/myfunc';
 	import ImgListGalleryAlbum from '@/components/partials/ImgListGalleryAlbum';
 	import OnProgresPage from '@/components/partials/OnProgresPage';
+	import ogImage from "@/assets/img/logo-tpi.png"
 
 	const _ = require("lodash");
 	const moment = require("moment");
@@ -16,9 +18,28 @@
 	const env = getEnv();
 	const currPage = ref(0);
 	const maxPage = ref(1);
-	//const gallery_tahun 
-	//const berita_hari_ini = ref({})
+
 	const error = ref(null);
+
+	const activeMeta = useActiveMeta()
+
+	onUpdated(() => {
+		if(data.value){
+			var curr = _.find(data.value, function(e, i) {
+				return i === currPage.value;
+			});
+			
+			if(curr && page.value == 'galleri'){
+				//console.log("update Meta galleri")
+				var metaGbr = window.location.origin+ogImage;
+				if(curr.gambar){
+					metaGbr = env.imgUrl+'posting/gallery_album/'+env.kunker+'/'+ curr.gambar;
+				}
+
+				setMeta(activeMeta, curr.judul_album, curr.ket_album, curr.yg_ngupload, metaGbr)
+			}
+		}
+	})
 
 	async function fetchData() {
 		isReady.value = false;
@@ -75,7 +96,7 @@
 						<template v-if="item.gambar">
 							<div class="overflow-hidden mb-4">
 								<img 
-									:src="env.imgUrl+'posting/'+(item.tipe_post == 'halaman' ? 'halaman' : 'gallery_album')+'/'+env.kunker+'/'+ item.gambar" 
+									:src="env.imgUrl+'posting/gallery_album/'+env.kunker+'/'+ item.gambar" 
 									:alt="item.judul_album"
 									@error="(() => item.gambar = null)"
 									style="object-fit: contain; overflow: hidden;" 

@@ -23,7 +23,7 @@
 		try{
 			let response = await getData("pranala", routename, routename);  
 			data.value = response.data.pranala
-			console.log(data.value)
+			//console.log(data.value)
 		} catch(err){
 			error.value = err.toString()
 		}

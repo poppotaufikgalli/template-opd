@@ -23,7 +23,7 @@
 		try{
 			let response = await getData("download");  
 			data.value = response.data.download
-			console.log(data.value)
+			//console.log(data.value)
 		} catch(err){
 			error.value = err.toString()
 		}

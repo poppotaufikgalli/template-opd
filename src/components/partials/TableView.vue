@@ -12,7 +12,7 @@
 				//this.selectPagging = this.selectPagging *page
 				//this.from = parseInt(this.from) + parseInt(this.selectTampil)
 				this.from = (parseInt(this.selectTampil) * (page-1))
-				console.log(this.from)
+				//console.log(this.from)
 			},
 			nextPagging() {
 				let max = this.data.length / this.selectTampil;
@@ -58,7 +58,7 @@
 				return this.selectTampil;
 			},
 			lsPagging(){
-				return this.data.length / this.selectTampil
+				return parseInt(this.data.length / this.selectTampil)
 			},
 		},
 		setup(){

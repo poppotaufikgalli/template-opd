@@ -25,7 +25,7 @@
 		try{
 			let response = await getData(routename);  
 			data.value = response.data.gallery
-			console.log(data.value)
+			//console.log(data.value)
 		} catch(err){
 			error.value = err.toString()
 		}

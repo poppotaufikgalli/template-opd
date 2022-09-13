@@ -9,7 +9,7 @@
 		async mounted() {
 			if(this.id_gallery_album > 0){
 				let response = await getGallery(this.id_gallery_album);
-				console.log(response.data)  
+				//console.log(response.data)  
 				this.lsGallery = response.data.gallery;
 				this.isReady = true
 			}
@@ -40,14 +40,17 @@
 							class="card-img" style="height: 150px; object-fit: contain;" 
 							@error="(() => item.gambar = null)"
 						>	
-						<div class="position-absolute bottom-0 start-0 w-100">
-							<div class="bg-primary bg-opacity-75 p-2 small">
-								<router-link 
-									:to="{path : '/gallery_item/'+makeJudul(item.judul_gallery), query: {id : item.id}}"
-									class="stretched-link text-decoration-none link-light small"
-								>{{item.judul_gallery}}</router-link>
+						<router-link 
+							:to="{path : '/gallery_item/'+makeJudul(item.judul_gallery), query: {id : item.id}}"
+							class="stretched-link text-decoration-none link-light small"
+						>
+							<div class="position-absolute bottom-0 start-0 w-100">
+								<div class="bg-primary bg-opacity-75 p-2 small">
+									{{item.judul_gallery}}
+									
+								</div>
 							</div>
-						</div>
+						</router-link>
 					</div>
 				</div>
 			</div>

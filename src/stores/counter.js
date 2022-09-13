@@ -21,12 +21,12 @@ export const useCounterStore = defineStore('template-opd', {
   // state: () => ({ count: 0 })
   actions: {
     setModal() {
-      console.log("isClose")
+      //console.log("isClose")
       this.modal = false
     },
 
     setModalA() {
-      console.log("can Open")
+      //console.log("can Open")
       this.modal = true
     },
 
@@ -37,9 +37,9 @@ export const useCounterStore = defineStore('template-opd', {
           var data = {
             "id": id.toString()
           };
-          let response = await sendData('klik_berita', data);  
-          console.log(id + " => Berita is Click")
-          console.log(response)
+          await sendData('klik_berita', data);  
+          //console.log(id + " => Berita is Click")
+          //console.log(response)
         } catch(err){
           err.value = err.toString()
         }

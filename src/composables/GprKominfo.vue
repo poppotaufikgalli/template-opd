@@ -1,9 +1,14 @@
 <script>
 	export default {
 		mounted(){
-			let gpr = document.createElement('script')
-			gpr.setAttribute('src', 'https://widget.kominfo.go.id/gpr-widget-kominfo.min.js')
-			document.head.appendChild(gpr)
+			const gprScript = document.getElementById('gpr-script')
+			if(!gprScript){
+				let gpr = document.createElement('script')
+				gpr.setAttribute('id', 'gpr-script')
+				gpr.setAttribute('src', 'https://widget.kominfo.go.id/gpr-widget-kominfo.min.js')
+				document.head.appendChild(gpr)	
+			}
+			
 		},
 	}
 </script>

@@ -1,9 +1,6 @@
 <script>
 	export default {
 		props: ['tag', 'page'],
-		mounted() {
-			//console.log(this.tags)
-		},
 		data(){
 			return {
 				newTags: (this.tag).split(',')
