@@ -33,26 +33,27 @@
 				return i === currPage.value;
 			});
 			
-			if(curr && page.value == 'berita'){
+			if(curr && page.value == 'artikel'){
 				//console.log("update Meta Berita")
 				var metaGbr = window.location.origin+ogImage;
 				if(curr.post_gambar){
-					metaGbr = env.imgUrl+'posting/berita/'+env.kunker+'/'+ curr.post_gambar;
+					metaGbr = env.imgUrl+'posting/artikel/'+env.kunker+'/'+ curr.post_gambar;
 				}
 
-				setMeta(activeMeta, curr.judul_post, curr.isi, curr.penulis, metaGbr)
+				setMeta(activeMeta, curr.judul_post, curr.isi_post, curr.penulis, metaGbr)
 			}
 		}
 	})
 
 	async function fetchData() {
 		isReady.value = false;
-		var routename = router.params.page ? router.params.page : 'berita';
+		var routename = router.params.page ? router.params.page : 'artikel';
 		page.value = routename
 		try{
-			let response = await getData('berita');  
-			data.value = response.data.berita
-			//console.log(page.value)
+			let response = await getData('artikel');  
+			data.value = response.data.artikel
+			
+			console.log(response)
 		} catch(err){
 			error.value = err.toString()
 		}
@@ -105,7 +106,7 @@
 						<br/>
 						<template v-if="item.post_gambar">
 							<img 
-								:src="env.imgUrl+'posting/'+(item.tipe_post == 'halaman' ? 'halaman' : 'berita')+'/'+env.kunker+'/'+ item.post_gambar" 
+								:src="env.imgUrl+'posting/artikel'+env.kunker+'/'+ item.post_gambar" 
 								class="img-fluid mb-4" 
 								:alt="item.judul_post"
 								style="object-fit: cover;" 
@@ -114,8 +115,10 @@
 						</template>
 						<div v-html="item.isi_post" class="small"></div>
 						<p class="blog-post-meta badge info-post small">
-							<i class="bi bi-stack"></i> Kategori : <router-link :to="{path : '/list/'+item.kategori_post, query: {type : 'kategori', page: page}}">{{item.kategori_post}}</router-link>  |  
-							<i class="bi bi-tags-fill"></i> Tags : <LinkTags :tag="item.tag" :page="page" />
+							<i class="bi bi-stack"></i> Kategori : <router-link :to="{path : '/list/'+item.kategori_post, query: {type : 'kategori', page: page}}">{{item.kategori_post}}</router-link>
+							<template v-if="item.tag">
+								|  <i class="bi bi-tags-fill"></i> Tags : <LinkTags :tag="item.tag" :page="page" />
+							</template>  
 						</p>
 						<hr />
 						<ImgListGalleryAlbum v-if="item.id_gallery_album > 0" :id_gallery_album="item.id_gallery_album" />	
@@ -163,7 +166,7 @@
 							<div class="list-body">
 								<template v-for="(item) in searchToday" :key="item.id">
 									<router-link 
-										:to="{path : '/berita/'+makeJudul(item.judul_post), query : {id: item.id} }" 
+										:to="{path : '/artikel/'+makeJudul(item.judul_post), query : {id: item.id} }" 
 										class="truncate-text l-2 fw-bold"
 										:class="{isActive : currPage == item.id}"
 									>
@@ -184,7 +187,7 @@
 							<div class="list-body">
 								<template v-for="(item) in searchPopulerNews.slice(0,4)" :key="item.id">
 									<router-link 
-										:to="{path : '/berita/'+makeJudul(item.judul_post), query : {id: item.id} }" 
+										:to="{path : '/artikel/'+makeJudul(item.judul_post), query : {id: item.id} }" 
 										class="d-flex justify-content-between align-items-center"
 										:class="{isActive : currPage == item.id}"
 									>
@@ -206,7 +209,7 @@
 							<div class="list-body">
 								<template v-for="(item, key) in data.slice(0,4)" :key="item.id">
 									<router-link v-if="currPage != key"
-										:to="{path : '/berita/'+makeJudul(item.judul_post), query : {id: item.id} }" 
+										:to="{path : '/artikel/'+makeJudul(item.judul_post), query : {id: item.id} }" 
 										class="truncate-text l-1 fw-bold"
 									>
 										<span>{{item.judul_post}}</span>
@@ -217,7 +220,7 @@
 					</template>
 					<div class="list-template-opd surface">
 						<div class="list-footer">
-							<router-link :to="{path:'/list/berita'}" class="truncate-text">Lihat Daftar Berita</router-link>
+							<router-link :to="{path:'/list/artikel'}" class="truncate-text">Lihat Daftar Artikel</router-link>
 						</div>
 					</div>
 				</div>

@@ -20,7 +20,8 @@
     "vue": "^3.2.13",
     "vue-gtag": "^2.0.1",
     "vue-meta": "^3.0.0-alpha.10",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.3",
+    "vue-social-sharing": "^4.0.0-alpha4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

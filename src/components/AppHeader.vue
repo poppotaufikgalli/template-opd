@@ -115,7 +115,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="menuNavHeader">
-          <ul class="navbar-nav mx-auto mb-lg-0">
+          <ul class="navbar-nav mx-auto mb-lg-0 d-flex flex-wrap justify-content-center">
             <template v-if="menu && menu.length">
               <li v-for="(value, index) in menu" :key="index" :class="value.submenu ? 'nav-item dropdown':'nav-item'">
                 <template v-if="value.submenu">

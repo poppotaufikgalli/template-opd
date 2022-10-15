@@ -29,6 +29,7 @@
 			unker.value = ret.data.unker;
 			nunker.value = ret.data.unker.nunker;
 			menu.value = ret.data.menu.lsmenu;
+			//console.log(menu.value)
 			banner.value = ret.data.banner;
 			berita_populer.value = ret.data.berita_populer;
 			pengumuman_khusus.value = ret.data.pengumuman_khusus;

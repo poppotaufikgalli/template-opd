@@ -47,7 +47,7 @@ input.theme-switch:checked + label {
 }
 
 #mainNavbar  {
-  height: 60px;
+  min-height: 60px;
   opacity: 1;
   background-color: var(--app-navbar-bgcolor);
 }

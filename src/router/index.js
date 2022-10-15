@@ -8,6 +8,7 @@ import GalleryView from '../views/GalleryView.vue'
 import GalleryItemView from '../views/GalleryItemView.vue'
 import DownloadAreaView from '../views/DownloadAreaView.vue'
 import DownloadView from '../views/DownloadView.vue'
+import ArtikelView from '../views/ArtikelView.vue'
 import PranalaListView from '../views/PranalaListView.vue'
 //import EventView from '../views/Post3View.vue'
 
@@ -67,6 +68,11 @@ const routes = [
     path: '/download_area/:judul?',
     name: 'download_area',
     component: DownloadAreaView,
+  },
+  {
+    path: '/artikel/:judul?',
+    name: 'artikel',
+    component: ArtikelView,
   },
   {
     path: '/download/:judul?',
