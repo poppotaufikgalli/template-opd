@@ -67,7 +67,7 @@
 	}
 
 	const searchPopulerNews = computed(()=> {
-		return _.orderBy(data.value, o => +o.jml_klik, ['desc']);
+		return _.orderBy(data.value, o => +o.jum_klik, ['desc']);
 	})
 
 	const searchToday = computed(()=> {

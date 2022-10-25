@@ -48,7 +48,7 @@
 		try{
 			let response = await getData("gallery_album");  
 			data.value = response.data.gallery_album
-			//console.log(data.value)
+			console.log(data.value)
 		} catch(err){
 			error.value = err.toString()
 		}
@@ -94,9 +94,9 @@
 							<i class="bi bi-pen-fill"></i> Oleh <router-link :to="{path: '/list/'+item.yg_ngupload, query: {type : 'yg_ngupload', page: page} }">{{item.yg_ngupload}}</router-link>
 						</p>
 						<template v-if="item.gambar">
-							<div class="overflow-hidden mb-4">
+							<div class="overflow-hidden mb-4 d-flex">
 								<img 
-									:src="env.imgUrl+'posting/gallery_album/'+env.kunker+'/'+ item.gambar" 
+									:src="env.imgUrl+'posting/galeri/'+env.kunker+'/'+ item.gambar" 
 									:alt="item.judul_album"
 									@error="(() => item.gambar = null)"
 									style="object-fit: contain; overflow: hidden;" 
@@ -104,7 +104,7 @@
 							</div>
 						</template>
 						<div v-html="cleanTextP(item.ket_album)" class="small"></div>
-						<ImgListGalleryAlbum v-if="item.id > 0" :id_gallery_album="item.id" />	
+						<ImgListGalleryAlbum v-if="item.id > 0" :id_gallery_album=item.id />	
 					</article>
 				</template>
 				<template v-else>

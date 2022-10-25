@@ -3,6 +3,7 @@
 	import MainCarousel from '@/components/partials/MainCarousel';
 	import SambutanView from '@/components/partials/SambutanView';
 	import ModalPengumumanKhusus from '@/components/partials/ModalPengumumanKhusus';
+	import ExtraStatistik from '@/components/partials/ExtraStatistik';
 
 	import InfografisDiskominfo from '@/composables/InfografisDiskominfo';
 	import GprKominfo from '@/composables/GprKominfo';
@@ -27,12 +28,15 @@
 	const isReady = ref(false);
 	const isDisabledPrev = ref(false)
 	const isDisabledNext = ref(true)
+	const lssetting = ref({});
+
 	const env = getEnv();
 
 	onBeforeMount(async() => {
 		const data = await getMainPageInfo()
 		sambutan.value = data.data.kata_sambutan;
-		//console.log(banner.value)
+		lssetting.value = data.data.lssetting;
+		//console.log(lssetting.value)
 
 		pengumuman.value = _.max(data.data.pengumuman, function(el) { 
 			return new Date(el.tgl_terbit.date).getTime();
@@ -52,6 +56,7 @@
 		pagging();
 
 		isReady.value = true;
+		//console.log((allberita.value))
 	});
 
 	function pagging(argument) {
@@ -140,7 +145,7 @@
 					<h3 class="list-title">
 						<div class="d-flex justify-content-between">
 							<span>Berita</span>
-							<nav v-if="berita && berita.length > 3" class="d-flex gap-2 align-items-center" aria-label="Pagination">
+							<nav v-if="berita && allberita.length > 3" class="d-flex gap-2 align-items-center" aria-label="Pagination">
 								<router-link :to="{path:'/list/berita'}" class="btn btn-sm btn-outline active">Lihat Daftar Berita</router-link>
 								<button @click="nextPagging" class="btn btn-sm btn-outline" :disabled="isDisabledNext">&lt;&lt;</button>
 								<button @click="prevPagging" class="btn btn-sm btn-outline" :disabled="isDisabledPrev">&gt;&gt;</button>
@@ -175,6 +180,9 @@
 						:to="{path : '/berita/'+makeJudul(item.judul_post), query : {id: item.id} }" 
 						class="stretched-link small">Lanjutkan Membaca</router-link>   
 				</article>
+			</template>
+			<template v-if="isReady">
+				<ExtraStatistik :lssetting="lssetting" />	
 			</template>
 		</div>
 

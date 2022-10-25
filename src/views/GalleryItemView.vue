@@ -15,6 +15,7 @@
 	const env = getEnv();
 	const currPage = ref(0);
 	const maxPage = ref(1);
+	const id_gallery_album = ref(0)
 	//const hari_ini = ref({})
 	const error = ref(null)
 
@@ -38,16 +39,22 @@
 		isReady.value = true;
 	}
 
-	const searchEventAktif = computed(()=> {
+	const galleryToday = computed(()=> {
 		var currentDate =  moment(new Date()).format('YYYY-MM-DD hh:mm:ss');
-		//return _.filter(data.value, { tgl_event_mulai: 'Y' >= currentDate && tgl_event_akhir <= currentDate });
 		return _.filter(data.value, (o) => {
-			return moment(currentDate).isBetween( moment(o.tgl_event_mulai).format('YYYY-MM-DD hh:mm:ss'), moment(o.tgl_event_akhir).format('YYYY-MM-DD hh:mm:ss') );
+			return moment(o.tgl_gambar).isSame(currentDate, 'day');
+		});
+	})
+
+	const galleryLainnya = computed(()=> {
+		return _.filter(data.value, (o) => {
+			return o.id_gallery_album == id_gallery_album.value;
 		});
 	})
 
 	function setCurrPage(id){
 		currPage.value = _.findKey(data.value, ['id', id]);
+		id_gallery_album.value = _.find(data.value, ['id', id]).id_gallery_album;
 		maxPage.value = parseInt(currPage.value) +1
 	}
 
@@ -142,7 +149,7 @@
 		<template v-if="isReady">
 			<div class="col-md-4">
 				<div class="position-sticky" style="top: 4rem;">
-					<template v-if="searchEventAktif.length > 0">
+					<template v-if="galleryToday.length > 0">
 						<div class="list-template-opd surface">
 							<div class="list-header">
 								<h5 class="list-title">
@@ -150,7 +157,7 @@
 								</h5>
 							</div>
 							<div class="list-body">
-								<template v-for="(item) in searchEventAktif" :key="item.id">
+								<template v-for="(item) in galleryToday" :key="item.id">
 									<router-link 
 										:to="{path : '/gallery_item/'+makeJudul(item.judul_gallery), query : {id: item.id} }" 
 										class="truncate-text l-2 fw-bold"
@@ -171,11 +178,11 @@
 								</h5>
 							</div>
 							<div class="list-body">
-								<template v-for="(item) in data.slice(0,4)" :key="item.id">
+								<template v-for="(item) in galleryLainnya" :key="item.id">
 									<router-link 
 										:to="{path : '/gallery_item/'+makeJudul(item.judul_gallery), query : {id: item.id} }" 
 										class="truncate-text l-2 fw-bold"
-										:class="{isActive : currPage == item.id}"
+										:class="{isActive : currPage === item.id}"
 									>
 										<span>{{item.judul_gallery}}</span>
 									</router-link>

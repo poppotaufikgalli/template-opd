@@ -5,6 +5,7 @@
 	import { getData, setMeta } from '@/composables/Api';
 	import { getEnv } from '@/composables/myfunc';
 	import ogImage from "@/assets/img/logo-tpi.png"
+	import ImgListGalleryAlbum from '@/components/partials/ImgListGalleryAlbum';
 
 	//const _ = require("lodash");
 	const data = ref({});

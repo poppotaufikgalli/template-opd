@@ -69,7 +69,7 @@
 				<p class="blog-post-meta badge info-post small">
 					<i class="bi bi-calendar-fill"></i> {{ beautifyDate(item.tgl_terbit) }}  |  
 					<i class="bi bi-pen-fill"></i> Oleh <a href="{{ route('post', ['post_id' => item.post_id])}}">{{item.post_user}}</a>  |  
-					<i class="bi bi-eye-fill"></i> Dilihat : {{item.jml_klik}}
+					<i class="bi bi-eye-fill"></i> Dilihat : {{item.jum_klik}}
 				</p>
 				<template v-if="item.post_gambar">
 					<img 

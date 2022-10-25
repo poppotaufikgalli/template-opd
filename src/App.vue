@@ -19,16 +19,18 @@
 	const pengumuman_khusus = ref({});
 	const event_terbit = ref({});
 
+	//const lssetting = ref({})
 	const router = useRoute();
 
 	onBeforeMount(async() => {
 		await getOPDInfo()
 		.then(ret => {
-			//console.log(ret)
 			opdInfo.value = ret.data;
 			unker.value = ret.data.unker;
 			nunker.value = ret.data.unker.nunker;
 			menu.value = ret.data.menu.lsmenu;
+			//lssetting.value = ret.data.setting;
+
 			//console.log(menu.value)
 			banner.value = ret.data.banner;
 			berita_populer.value = ret.data.berita_populer;
