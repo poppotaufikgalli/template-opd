@@ -33,7 +33,7 @@
 				//console.log("update Meta galleri")
 				var metaGbr = window.location.origin+ogImage;
 				if(curr.gambar){
-					metaGbr = env.imgUrl+'posting/gallery_album/'+env.kunker+'/'+ curr.gambar;
+					metaGbr = env.imgUrl+'posting/gallery_album/'+env.kunker+'/thumb/thumb_'+ curr.gambar;
 				}
 
 				setMeta(activeMeta, curr.judul_album, curr.ket_album, curr.yg_ngupload, metaGbr)
@@ -96,7 +96,7 @@
 						<template v-if="item.gambar">
 							<div class="overflow-hidden mb-4 d-flex">
 								<img 
-									:src="env.imgUrl+'posting/galeri/'+env.kunker+'/'+ item.gambar" 
+									:src="env.imgUrl+'posting/galeri/'+env.kunker+'/original/'+ item.gambar" 
 									:alt="item.judul_album"
 									@error="(() => item.gambar = null)"
 									style="object-fit: contain; overflow: hidden;" 

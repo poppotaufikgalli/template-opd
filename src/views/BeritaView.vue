@@ -37,7 +37,7 @@
 				//console.log("update Meta Berita")
 				var metaGbr = window.location.origin+ogImage;
 				if(curr.post_gambar){
-					metaGbr = env.imgUrl+'posting/berita/'+env.kunker+'/'+ curr.post_gambar;
+					metaGbr = env.imgUrl+'posting/berita/'+env.kunker+'/thumb/thumb_'+ curr.post_gambar;
 				}
 
 				setMeta(activeMeta, curr.judul_post, curr.isi, curr.penulis, metaGbr)
@@ -52,7 +52,7 @@
 		try{
 			let response = await getData('berita');  
 			data.value = response.data.berita
-			//console.log(page.value)
+			console.log(data.value)
 		} catch(err){
 			error.value = err.toString()
 		}
@@ -105,7 +105,7 @@
 						<br/>
 						<template v-if="item.post_gambar">
 							<img 
-								:src="env.imgUrl+'posting/'+(item.tipe_post == 'halaman' ? 'halaman' : 'berita')+'/'+env.kunker+'/'+ item.post_gambar" 
+								:src="env.imgUrl+'posting/berita/'+env.kunker+'/original/'+ item.post_gambar" 
 								class="img-fluid mb-4" 
 								:alt="item.judul_post"
 								style="object-fit: cover;" 

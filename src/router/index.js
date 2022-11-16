@@ -6,6 +6,8 @@ import PengumumanView from '../views/PengumumanView.vue'
 import KalenderView from '../views/KalenderView.vue'
 import GalleryView from '../views/GalleryView.vue'
 import GalleryItemView from '../views/GalleryItemView.vue'
+import InfografisView from '../views/InfografisView.vue'
+import InfografisDetailView from '../views/InfografisDetailView.vue'
 import DownloadAreaView from '../views/DownloadAreaView.vue'
 import DownloadView from '../views/DownloadView.vue'
 import ArtikelView from '../views/ArtikelView.vue'
@@ -53,6 +55,16 @@ const routes = [
     path: '/gallery/:judul?',
     name: 'gallery',
     component: GalleryView,
+  },
+  {
+    path: '/infografis/',
+    name: 'infografis',
+    component: InfografisView,
+  },
+  {
+    path: '/infografis/:judul?',
+    name: 'infografis_detail',
+    component: InfografisDetailView,
   },
   {
     path: '/gallery_album/:judul?',

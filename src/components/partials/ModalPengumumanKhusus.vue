@@ -82,7 +82,7 @@
 							<div class="carousel-inner rounded">
 								<template v-if="data">
 									<div v-for="(item, key) in data" :key="key" class="carousel-item" :class="{active : key == 0}">
-										<img :src="env.imgUrl+'posting/pengumuman/'+env.kunker+'/'+ item.gambar_khusus" class="d-block w-100" :alt="item.judul_pengumuman" >
+										<img :src="env.imgUrl+'posting/pengumuman/'+env.kunker+'/original/'+ item.gambar_khusus" class="d-block w-100" :alt="item.judul_pengumuman" >
 										<div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50">
 											<div class="d-flex align-items-start flex-column px-3">
 												<div class="d-flex justify-content-between">

@@ -33,7 +33,7 @@
 				//console.log("update Meta pengumuman")
 				var metaGbr = window.location.origin+ogImage;
 				if(curr.gambar){
-					metaGbr = env.imgUrl+'posting/pengumuman/'+env.kunker+'/'+ curr.gambar;
+					metaGbr = env.imgUrl+'posting/pengumuman/'+env.kunker+'/thumb/thumb_'+ curr.gambar;
 				}
 
 				setMeta(activeMeta, curr.judul_pengumuman, curr.isi, curr.penulis, metaGbr)
@@ -123,7 +123,7 @@
 						<template v-if="item.gambar">
 							<div class="overflow-hidden mb-4" style="max-height: 500px;">
 								<img 
-									:src="env.imgUrl+'posting/pengumuman/'+env.kunker+'/'+ item.gambar" 
+									:src="env.imgUrl+'posting/pengumuman/'+env.kunker+'/original/'+ item.gambar" 
 									class="img-fluid mb-4" 
 									:alt="item.judul_pengumuman"
 								>   

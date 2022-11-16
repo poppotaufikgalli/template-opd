@@ -23,7 +23,7 @@
 			var curr = data.value;
 			var metaGbr = window.location.origin+ogImage;
 			if(curr.post_gambar){
-				metaGbr = env.imgUrl+'posting/halaman/'+env.kunker+'/'+ curr.post_gambar;
+				metaGbr = env.imgUrl+'posting/halaman/'+env.kunker+'/thumb/thumb_'+ curr.post_gambar;
 			}
 
 			setMeta(activeMeta, curr.judul_post, curr.isi_post , curr.penulis, metaGbr)
@@ -64,7 +64,7 @@
 					<h3 class="blog-post-title text-capitalize">{{ data.judul_post }}</h3>
 					<template v-if="data.post_gambar">
 						<img 
-							:src="env.imgUrl+'posting/halaman/'+env.kunker+'/'+ data.post_gambar" 
+							:src="env.imgUrl+'posting/halaman/'+env.kunker+'/original/'+ data.post_gambar" 
 							class="col-md-8" 
 							style="object-fit: cover;" 
 							:alt="data.judul_post"

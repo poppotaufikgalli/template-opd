@@ -37,7 +37,7 @@
 				<div class="col" v-for="(item, key) in lsGallery" :key="key">
 					<div class="position-relative text-bg-dark">
 						<img v-if="item.vid_pic == 'P'"
-							:src="env.imgUrl+'posting/galeri/'+env.kunker+'/thumb_'+ item.gambar" 
+							:src="env.imgUrl+'posting/galeri/'+env.kunker+'/thumb/thumb_'+ item.gambar" 
 							class="card-img" style="height: 150px; object-fit: contain;" 
 							@error="(() => item.gambar = null)"
 						>	

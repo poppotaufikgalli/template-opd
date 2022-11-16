@@ -163,7 +163,7 @@
 					</div>
 					<template v-if="item.post_gambar">
 						<img 
-							:src="env.imgUrl+'posting/berita/'+env.kunker+'/'+ item.post_gambar" 
+							:src="env.imgUrl+'posting/berita/'+env.kunker+'/original/'+ item.post_gambar" 
 							class="col-md-6 img-fluid" 
 							:alt="item.judul" 
 							@error="(() => item.post_gambar = null)"

@@ -37,7 +37,7 @@
 				//console.log("update Meta Berita")
 				var metaGbr = window.location.origin+ogImage;
 				if(curr.post_gambar){
-					metaGbr = env.imgUrl+'posting/artikel/'+env.kunker+'/'+ curr.post_gambar;
+					metaGbr = env.imgUrl+'posting/artikel/'+env.kunker+'/thumb/thumb_'+ curr.post_gambar;
 				}
 
 				setMeta(activeMeta, curr.judul_post, curr.isi_post, curr.penulis, metaGbr)
@@ -106,7 +106,7 @@
 						<br/>
 						<template v-if="item.post_gambar">
 							<img 
-								:src="env.imgUrl+'posting/artikel'+env.kunker+'/'+ item.post_gambar" 
+								:src="env.imgUrl+'posting/artikel'+env.kunker+'/original/'+ item.post_gambar" 
 								class="img-fluid mb-4" 
 								:alt="item.judul_post"
 								style="object-fit: cover;" 

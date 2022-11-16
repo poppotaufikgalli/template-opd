@@ -32,7 +32,7 @@
 				console.log("update Meta event")
 				var metaGbr = window.location.origin+ogImage;
 				if(curr.gambar){
-					metaGbr = env.imgUrl+'posting/event/'+env.kunker+'/'+ curr.gambar;
+					metaGbr = env.imgUrl+'posting/event/'+env.kunker+'/thumb/thumb_'+ curr.gambar;
 				}
 
 				setMeta(activeMeta, curr.judul_kalender_event, curr.ket_kalender_event, curr.yg_bikin, metaGbr)
@@ -96,7 +96,7 @@
 						<template v-if="item.gambar">
 							<div class="overflow-hidden mb-4" style="max-height: 500px;">
 								<img 
-									:src="env.imgUrl+'posting/event/'+env.kunker+'/'+ item.gambar" 
+									:src="env.imgUrl+'posting/event/'+env.kunker+'/original/'+ item.gambar" 
 									:alt="item.judul_kalender_event"
 									class="img-fluid mb-4" 
 									style="object-fit: contain; overflow: hidden;" 

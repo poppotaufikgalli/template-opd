@@ -85,7 +85,7 @@
 						<template v-if="item.gambar">
 							<div class="d-flex justify-content-center">
 								<img 
-									:src="env.imgUrl+'posting/galeri/'+env.kunker+'/'+ item.gambar" 
+									:src="env.imgUrl+'posting/galeri/'+env.kunker+'/original/'+ item.gambar" 
 									:alt="item.judul_kalender_event"
 									class="img-fluid mb-4" 
 									style="object-fit: contain; overflow: hidden;" 

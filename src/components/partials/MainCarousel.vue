@@ -36,7 +36,7 @@
 		<div v-if="pengumuman" :class="event ? 'col-md-6' : 'col-md-12'">
 			<div class="card text-bg-dark">
 				<img 
-					:src="env.imgUrl+'posting/pengumuman/'+env.kunker+'/'+ pengumuman.gambar" 
+					:src="env.imgUrl+'posting/pengumuman/'+env.kunker+'/original/'+ pengumuman.gambar" 
 					class="card-img" style="max-height: 250px; object-fit: cover;" 
 					:alt="pengumuman.judul"
 				>	
@@ -59,7 +59,7 @@
 		<div v-if="event" :class="pengumuman ? 'col-md-6' : 'col-md-12'">
 			<div class="card text-bg-dark">
 				<img 
-					:src="env.imgUrl+'posting/event/'+env.kunker+'/'+ event.gambar" 
+					:src="env.imgUrl+'posting/event/'+env.kunker+'/original/'+ event.gambar" 
 					class="card-img" style="max-height: 250px; object-fit: cover;" 
 					:alt="event.judul_kalender_event"
 				>	

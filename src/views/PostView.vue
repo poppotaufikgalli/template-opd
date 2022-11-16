@@ -73,7 +73,7 @@
 				</p>
 				<template v-if="item.post_gambar">
 					<img 
-						:src="env.imgUrl+'posting/'+(item.tipe_post == 'halaman' ? 'halaman' : 'berita')+'/'+env.kunker+'/'+ item.post_gambar" 
+						:src="env.imgUrl+'posting/'+(item.tipe_post == 'halaman' ? 'halaman' : 'berita')+'/'+env.kunker+'/original/'+ item.post_gambar" 
 						class="col-md-8" 
 						:alt="item.post_judul"
 						

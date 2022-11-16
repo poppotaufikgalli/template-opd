@@ -26,7 +26,7 @@
 			</div>
 			<div class="list-body mb-2">
 				<div class="d-flex justify-content-center pb-3">
-					<img :src="base_url + 'image/posting/halaman/' + kunker +'/'+ sambutan.gambar" class="d-block w-100" alt="{{sambutan.judul}}">
+					<img :src="base_url + 'image/posting/halaman/' + kunker +'/original/'+ sambutan.gambar" class="d-block w-100" alt="{{sambutan.judul}}">
 				</div>
 				<div v-html="sambutan.isi" class="small truncate-text l-5"></div>
 			</div>
