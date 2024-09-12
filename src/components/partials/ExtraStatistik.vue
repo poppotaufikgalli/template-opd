@@ -1,11 +1,12 @@
 <script>
-    import { Line } from 'vue-chartjs'
+    import { Line, Bar } from 'vue-chartjs'
     import {
       Chart as ChartJS,
       Title,
       Tooltip,
       Legend,
       LineElement,
+      BarElement,
       LinearScale,
       PointElement,
       CategoryScale,
@@ -16,6 +17,7 @@
       Tooltip,
       Legend,
       LineElement,
+      BarElement,
       LinearScale,
       PointElement,
       CategoryScale,
@@ -55,10 +57,11 @@
                 default: () => {}
             },
         },
-        components: { Line },
+        components: { Line, Bar },
         data: () => ({
             dtGrafik: [],
             pathGrafik : '',
+            dtFrame: '',
             isReady: false,
             //modal: null,
             //modalContainer: null,
@@ -73,6 +76,42 @@
                 const ret = _.map(data, function(o) { return o[idx]; });
                 //console.log(ret)
                 return ret;
+            },
+            makeDataset(data, header){
+                var labels = _.values(header.slice(1))
+                
+                var label = _.map(data, function(value){
+                    return value[1]
+                })
+
+                var result = []
+                for (var i = 0; i < data.length; i++) {
+                    var dd = _.values(data[i])
+                    
+                    for (var j = 0; j < dd.length; j++) {
+                        //console.log(dd[j])
+                        (result[j] || (result[j] = [])).push(dd[j])
+                    }
+                }
+
+                result = result.slice(1)
+                var dataset = []
+                for (var h = 0; h < result.length; h++) {
+                    dataset[h] = {
+                        label: labels[h],
+                        backgroundColor: [this.randomColor()],
+                        data: result[h]
+                    };
+                }
+
+                return {
+                    'labels' : label,
+                    'datasets' : dataset,
+                };
+            },
+            randomColor(){
+                var o = Math.round, r = Math.random, s = 255;
+                return 'rgb(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ')';
             },
             setupLeafletMap: function () {
                 this.$nextTick(() => {
@@ -114,7 +153,7 @@
                                             opacity: 1,
                                             icon: markerIcon // here assign the markerIcon var
                                         }).bindPopup(labels[ii]);
-                                        console.log([coordinfo[ii][2], coordinfo[ii][3]])
+                                        //console.log([coordinfo[ii][2], coordinfo[ii][3]])
                                         route.addLayer(marker)
                                     }
                                     //console.log(dt[i].excel.data)
@@ -131,12 +170,15 @@
             
         },
         async mounted(){
-            console.log("Extra Statistik")
+            //console.log("Extra Statistik", this.lssetting)
             //console.log((this.lssetting.statistik).includes('Grafik'))
             
             if((!!this.lssetting) && (!!this.lssetting.statistik)){
                 if((this.lssetting.statistik).includes('Grafik')){
-                    const response = await getData('Grafik');  
+                    const response = await getData('Grafik'); 
+
+                    //console.log(response) 
+
                     if(response.data.Grafik){
                         this.pathGrafik = response.data.path;
                         this.dtGrafik = response.data.Grafik;
@@ -145,16 +187,18 @@
                         this.setupLeafletMap();
                     }    
                 }
+
+                if((this.lssetting.statistik).includes('Eksternal Data')){
+                    const response = await getData('eksdata');  
+                    this.isReady = true;
+                    this.dtFrame = response.data.eksdata;
+                }
             }
         },
         setup(){
-            //const statistik = this.lssetting.statistik
-            //const isReady = false
             const logo = require('@/assets/img/logo-tpi.png');
             return{
                 logo,
-                //statistik
-                //isReady,
             }
         },
     }
@@ -176,29 +220,61 @@
                 </h3>
             </div>
             <template v-if="dtGrafik">
-                <article  v-for="item in dtGrafik" :key="item.id" class="blog-post blog-post-list surface p-4 my-4 overflow-hidden position-relative">
+                <article  v-for="item in dtGrafik" :key="item.id" class="blog-post blog-post-list surface p-4 my-4 overflow-hidden position-relative border app-background" style="background-color: var(--app-bar-color);">
+                    <div class="list-header mb-4">
+                        <div class="list-title ">
+                            <span class="fw-semibold w-100">{{item.judul}}</span>
+                        </div>
+                    </div>
                     <template v-if="(item.jns_file == 'G')">
                         <Line
                             :chart-options="chartOptions"
-                            :chart-data="{
-                                'labels' : getExceldata(item.excel.data, 1),
-                                'datasets' : [{ 
-                                    label: (item.judul).toUpperCase(),
-                                    backgroundColor: '#f87979',
-                                    data: getExceldata(item.excel.data, 2),
-                                }],
-                            }"
+                            :chart-data="makeDataset(item.excel.data, item.excel.header)"
                             :chart-id="chartId"
                             :width="height"
                             :height="width"
                         />
                     </template>
+                    <template v-if="(item.jns_file == 'GB')">
+                        <Bar
+                            :chart-options="chartOptions"
+                            :chart-data="makeDataset(item.excel.data, item.excel.header)"
+                            
+                        />
+                    </template>
+                    <template v-if="(item.jns_file == 'T')">
+                        <table class="table table-sm small table-bordered">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <template v-for="header in item.excel.header" :key="header.id">
+                                        <th class="text-center">{{header}}</th>
+                                    </template>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="rows in item.excel.data" :key="rows.id">
+                                    <tr>
+                                        <template v-for="cell in rows" :key="cell.id">
+                                            <td :class="typeof cell !== 'string' ? 'text-center' : ''">{{cell}}</td>
+                                        </template>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </template>
                     <template v-if="(item.jns_file == 'P')">
-                        <p class="text-center">{{item.judul}}</p>
                         <div class="overflow-hidden">
                             <div :id="'mapContainer'+item.id" ref="mapElement" class="mapStyle"></div>
                         </div>
                     </template>
+                </article>
+            </template>
+            <template v-if="dtFrame">
+                <article  v-for="item in dtFrame" :key="item.id" class="blog-post blog-post-list surface p-4 my-4 overflow-hidden position-relative">
+                    <p class="text-center fw-bold">{{item.judul}}</p>
+                    <div class="d-flex justify-content-center">
+                        <div v-html="item.isi"/>
+                    </div>
                 </article>
             </template>
         </div>

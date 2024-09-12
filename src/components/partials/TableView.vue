@@ -58,7 +58,7 @@
 				return this.selectTampil;
 			},
 			lsPagging(){
-				return parseInt(this.data.length / this.selectTampil)
+				return parseInt(this.data.length / this.selectTampil) +1
 			},
 		},
 		setup(){

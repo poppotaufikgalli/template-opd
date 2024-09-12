@@ -11,6 +11,7 @@ import InfografisDetailView from '../views/InfografisDetailView.vue'
 import DownloadAreaView from '../views/DownloadAreaView.vue'
 import DownloadView from '../views/DownloadView.vue'
 import ArtikelView from '../views/ArtikelView.vue'
+import StatistikView from '../views/StatistikView.vue'
 import PranalaListView from '../views/PranalaListView.vue'
 //import EventView from '../views/Post3View.vue'
 
@@ -85,6 +86,11 @@ const routes = [
     path: '/artikel/:judul?',
     name: 'artikel',
     component: ArtikelView,
+  },
+  {
+    path: '/statistik/:judul?',
+    name: 'statistik',
+    component: StatistikView,
   },
   {
     path: '/download/:judul?',

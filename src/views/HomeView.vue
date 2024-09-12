@@ -34,9 +34,10 @@
 
 	onBeforeMount(async() => {
 		const data = await getMainPageInfo()
+
 		sambutan.value = data.data.kata_sambutan;
 		lssetting.value = data.data.lssetting;
-		//console.log(lssetting.value)
+		//console.log("lssetting",lssetting.value)
 
 		pengumuman.value = _.max(data.data.pengumuman, function(el) { 
 			return new Date(el.tgl_terbit.date).getTime();

@@ -26,7 +26,7 @@
 	onUpdated(() => {
 		if(data.value){
 			var curr = _.find(data.value, function(e, i) {
-				return i === currPage.value;
+				return i == currPage.value;
 			});
 			
 			if(curr && page.value == 'galleri'){

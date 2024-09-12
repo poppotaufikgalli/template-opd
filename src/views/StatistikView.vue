@@ -2,14 +2,37 @@
 	import { ref, watch, computed, onUpdated } from 'vue'
 	//import { useMeta } from 'vue-meta'
 	import { useActiveMeta } from 'vue-meta'
-	import LinkTags from '@/components/partials/LinkTags';
-	import ImgListGalleryAlbum from '@/components/partials/ImgListGalleryAlbum';
+	//import ExtraStatistik from '@/components/partials/ExtraStatistik';
 	import OnProgresPage from '@/components/partials/OnProgresPage';
 	import { useRoute } from 'vue-router';
 	import { getData, setMeta } from '@/composables/Api';
-	import { getEnv, makeJudul } from '@/composables/myfunc';
+	import { makeJudul } from '@/composables/myfunc';
 	import { useCounterStore } from '@/stores/counter'
 	import ogImage from "@/assets/img/logo-tpi.png"
+
+	import { Line, Bar } from 'vue-chartjs'
+	import {
+		Chart as ChartJS,
+		Title,
+		Tooltip,
+		Legend,
+		LineElement,
+		BarElement,
+		LinearScale,
+		PointElement,
+		CategoryScale,
+	} from 'chart.js'
+
+	ChartJS.register(
+		Title,
+		Tooltip,
+		Legend,
+		LineElement,
+		BarElement,
+		LinearScale,
+		PointElement,
+		CategoryScale,
+	)
 
 	const _ = require("lodash");
 	const moment = require("moment");
@@ -18,11 +41,18 @@
 	const isReady = ref(false);
 	const router = useRoute();
 	const page = ref('');
-	const env = getEnv();
+
 	const currPage = ref(0);
 	const maxPage = ref(1);
 	const error = ref();
 
+	const width = ref(300)
+	const height = ref(400)
+	const chartOptions = ref({
+		responsive: true,
+        maintainAspectRatio: false
+	})
+	//const lssetting = ref({});
 	const store = useCounterStore()
 
 	const activeMeta = useActiveMeta()
@@ -30,33 +60,27 @@
 	onUpdated(() => {
 		if(data.value){
 			var curr = _.find(data.value, function(e, i) {
-				//console.log(i == currPage.value)
 				return i == currPage.value;
 			});
-
-			//console.log(curra)
-			if(curr && page.value == 'berita'){
+			
+			if(curr && page.value == 'statistik'){
 				//console.log("update Meta Berita")
-
-				console.log(curr.post_gambar)
 				var metaGbr = window.location.origin+ogImage;
-				if(curr.post_gambar){
-					metaGbr = env.imgUrl+'posting/berita/'+env.kunker+'/thumb/thumb_'+ curr.post_gambar;
-				}
 
-				setMeta(activeMeta, curr.judul_post, curr.isi, curr.penulis, metaGbr)
+				setMeta(activeMeta, curr.judul, curr.judul, curr.yg_ngupload, metaGbr)
 			}
 		}
 	})
 
 	async function fetchData() {
 		isReady.value = false;
-		var routename = router.params.page ? router.params.page : 'berita';
+		var routename = router.params.page ? router.params.page : 'statistik';
+		//console.log(routename)
 		page.value = routename
+		
 		try{
-			let response = await getData('berita');  
-			data.value = response.data.berita
-			//console.log(data.value)
+			let response = await getData('statistik');  
+			data.value = response.data.Grafik
 		} catch(err){
 			error.value = err.toString()
 		}
@@ -86,6 +110,44 @@
 		store.setVisitList(id);
 	}
 
+	function makeDataset(data, header){
+		var labels = _.values(header.slice(1))
+				
+		var label = _.map(data, function(value){
+			return value[1]
+		})
+
+		var result = []
+		for (var i = 0; i < data.length; i++) {
+			var dd = _.values(data[i])
+			
+			for (var j = 0; j < dd.length; j++) {
+				//console.log(dd[j])
+				(result[j] || (result[j] = [])).push(dd[j])
+			}
+		}
+
+		result = result.slice(1)
+		var dataset = []
+		for (var h = 0; h < result.length; h++) {
+			dataset[h] = {
+				label: labels[h],
+				backgroundColor: [randomColor()],
+				data: result[h]
+			};
+		}
+
+		return {
+			'labels' : label,
+			'datasets' : dataset,
+		};
+	}
+
+	function randomColor(){
+		var o = Math.round, r = Math.random, s = 255;
+		return 'rgb(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ')';
+	}
+
 	// fetch immediately
 	fetchData()
 	// ...then watch for url change
@@ -100,29 +162,62 @@
 			<template v-if="isReady">
 				<template v-if="data">
 					<article v-for="item in data.slice(currPage, maxPage)" :key="item.id" class="blog-post blog-post-list overflow-hidden surface">
-						<h3 class="blog-post-title text-capitalize">{{ item.judul_post }}</h3>
+						<h3 class="blog-post-title text-capitalize">{{ item.judul }}</h3>
 						<p class="blog-post-meta badge info-post small">
-							<i class="bi bi-calendar-fill"></i> {{ item.tanggal_terbit }}  |  
-							<i class="bi bi-pen-fill"></i> Oleh <router-link :to="{path: '/list/'+item.penulis, query: {type : 'penulis', page: page} }">{{item.alias == '' ? item.penulis : item.alias }}</router-link>  |  
+							<i class="bi bi-calendar-fill"></i> {{ item.tgl_terbit }}  |  
+							<i class="bi bi-pen-fill"></i> Oleh <router-link :to="{path: '/list/'+item.yg_ngupload, query: {type : 'penulis', page: page} }">{{ item.yg_ngupload}}</router-link>  |  
 							<i class="bi bi-eye-fill"></i> Dilihat : {{item.jum_klik ? item.jum_klik : 0}}
 						</p>
 						<br/>
-						<template v-if="item.post_gambar">
-							<img 
-								:src="env.imgUrl+'posting/berita/'+env.kunker+'/original/'+ item.post_gambar" 
-								class="img-fluid mb-4" 
-								:alt="item.judul_post"
-								style="object-fit: cover;" 
-								@error="(() => item.post_gambar = null)"
-							>	
+						<template v-if="isReady">
+							<article class="blog-post blog-post-list surface p-4 my-4 overflow-hidden position-relative border app-background" style="background-color: var(--app-bar-color);">
+								<template v-if="(item.jns_file == 'G')">
+									<Line
+										:chart-options="chartOptions"
+										:chart-data="makeDataset(item.excel.data, item.excel.header)"
+										:width="width"
+										:height="height"
+									/>
+								</template>
+								<template v-if="(item.jns_file == 'GB')">
+									<Bar
+										:chart-options="chartOptions"
+										:chart-data="makeDataset(item.excel.data, item.excel.header)"
+										:width="width"
+										:height="height"
+									/>
+								</template>
+								<template v-if="(item.jns_file == 'T')">
+									<table class="table table-sm small table-bordered">
+										<thead class="table-secondary">
+											<tr>
+												<template v-for="header in item.excel.header" :key="header.id">
+													<th class="text-center">{{header}}</th>
+												</template>
+											</tr>
+										</thead>
+										<tbody>
+											<template v-for="rows in item.excel.data" :key="rows.id">
+												<tr>
+													<template v-for="cell in rows" :key="cell.id">
+														<td :class="typeof cell !== 'string' ? 'text-center' : ''">{{cell}}</td>
+													</template>
+												</tr>
+											</template>
+										</tbody>
+									</table>
+								</template>
+								<template v-if="(item.jns_file == 'P')">
+									<div class="overflow-hidden">
+										<div :id="'mapContainer'+item.id" ref="mapElement" class="mapStyle"></div>
+									</div>
+								</template>
+							</article>
 						</template>
-						<div v-html="item.isi_post" class="small"></div>
+						<div v-html="item.guid" class="small"></div>
 						<p class="blog-post-meta badge info-post small">
-							<i class="bi bi-stack"></i> Kategori : <router-link :to="{path : '/list/'+item.kategori_post, query: {type : 'kategori', page: page}}">{{item.kategori_post}}</router-link>  |  
-							<i class="bi bi-tags-fill"></i> Tags : <LinkTags :tag="item.tag" :page="page" />
+							<i class="bi bi-stack"></i> Jenis : {{item.jenis_file}}
 						</p>
-						<hr />
-						<ImgListGalleryAlbum v-if="item.id_gallery_album > 0" :id_gallery_album="item.id_gallery_album" />	
 					</article>
 				</template>
 				<template v-else>
@@ -167,11 +262,11 @@
 							<div class="list-body">
 								<template v-for="(item) in searchToday" :key="item.id">
 									<router-link 
-										:to="{path : '/berita/'+makeJudul(item.judul_post), query : {id: item.id} }" 
+										:to="{path : '/statistik/'+makeJudul(item.judul), query : {id: item.id} }" 
 										class="truncate-text l-2 fw-bold"
 										:class="{isActive : currPage == item.id}"
 									>
-										<span>{{item.judul_post}}</span>
+										<span>{{item.judul}}</span>
 									</router-link>
 								</template>
 							</div>
@@ -188,11 +283,11 @@
 							<div class="list-body">
 								<template v-for="(item) in searchPopulerNews.slice(0,4)" :key="item.id">
 									<router-link 
-										:to="{path : '/berita/'+makeJudul(item.judul_post), query : {id: item.id} }" 
+										:to="{path : '/statistik/'+makeJudul(item.judul), query : {id: item.id} }" 
 										class="d-flex justify-content-between align-items-center"
 										:class="{isActive : currPage == item.id}"
 									>
-										<span class="truncate-text l-1 fw-bold">{{item.judul_post}}</span>
+										<span class="truncate-text l-1 fw-bold">{{item.judul}}</span>
 										<span class="badge info-post bg-transparent"><i class="bi bi-eye-fill"></i>&nbsp;{{item.jum_klik}}</span>
 									</router-link>
 								</template>
@@ -210,10 +305,10 @@
 							<div class="list-body">
 								<template v-for="(item, key) in data.slice(0,4)" :key="item.id">
 									<router-link v-if="currPage != key"
-										:to="{path : '/berita/'+makeJudul(item.judul_post), query : {id: item.id} }" 
+										:to="{path : '/statistik/'+makeJudul(item.judul), query : {id: item.id} }" 
 										class="truncate-text l-1 fw-bold"
 									>
-										<span>{{item.judul_post}}</span>
+										<span>{{item.judul}}</span>
 									</router-link>
 								</template>
 							</div>
@@ -221,7 +316,7 @@
 					</template>
 					<div class="list-template-opd surface">
 						<div class="list-footer">
-							<router-link :to="{path:'/list/berita'}" class="truncate-text">Lihat Daftar Berita</router-link>
+							<router-link :to="{path:'/list/statistik'}" class="truncate-text">Lihat Daftar Statistik</router-link>
 						</div>
 					</div>
 				</div>

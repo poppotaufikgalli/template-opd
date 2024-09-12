@@ -576,3 +576,25 @@ figure.image.image-style-side {
   background-size: contain;
 }
 
+@-webkit-keyframes zoom {
+  from {
+    -webkit-transform: scale(1, 1);
+  }
+  to {
+    -webkit-transform: scale(1.1, 1.1);
+  }
+}
+
+@keyframes zoom {
+  from {
+    transform: scale(1, 1);
+  }
+  to {
+    transform: scale(1.1, 1.1);
+  }
+}
+
+.carousel-inner .carousel-item > img {
+  -webkit-animation: zoom 10s;
+  animation: zoom 10s;
+}
